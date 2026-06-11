@@ -44,7 +44,8 @@
     font-family: var(--font-sans);
     background-color: var(--theme-bg);
     color: var(--theme-text-primary);
-    overflow-x: hidden;
+    overflow-x: clip;
+    overscroll-behavior-x: none;
     transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
@@ -125,7 +126,7 @@
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #ffffff;
+    background: transparent;
   }
   ::-webkit-scrollbar-thumb {
     background: #cccccc;

@@ -1,5 +1,5 @@
-import React, { useRef } from "react";
-import { motion, useScroll, useTransform, useSpring } from "motion/react";
+import React, { useRef, useLayoutEffect } from "react";
+import { gsap, ScrollTrigger } from "../lib/gsap";
 
 interface ThreeDScrollWrapperProps {
   children: React.ReactNode;
@@ -7,55 +7,72 @@ interface ThreeDScrollWrapperProps {
   className?: string;
 }
 
+/**
+ * ThreeDScrollWrapper — GSAP ScrollTrigger section entrance.
+ *
+ * Strategy: the wrapper itself does NOT hide or fade the section during reading.
+ * It only fires a ONE-SHOT entrance when the section scrolls into view.
+ * Content inside the section handles its own per-element scroll animations.
+ *
+ * Entrance: section slides up + rotates in from below, settles at rest.
+ * That's it — no opacity-to-zero exits so the user can always read content.
+ */
 export const ThreeDScrollWrapper: React.FC<ThreeDScrollWrapperProps> = ({
   children,
   id,
   className = "",
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const innerRef     = useRef<HTMLDivElement>(null);
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"],
-  });
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      const el = innerRef.current;
+      if (!el) return;
 
-  const rotateXRaw = useTransform(scrollYProgress, [0, 0.3, 0.5, 0.7, 1], [14, 4, 0, -4, -14]);
-  const yRaw       = useTransform(scrollYProgress, [0, 0.3, 0.5, 0.7, 1], [70, 18, 0, -18, -50]);
-  const scaleRaw   = useTransform(scrollYProgress, [0, 0.3, 0.5, 0.7, 1], [0.9, 0.97, 1, 0.97, 0.93]);
-  const opacityRaw = useTransform(scrollYProgress, [0, 0.18, 0.38, 0.62, 0.82, 1], [0, 0.55, 1, 1, 0.55, 0]);
-  const zRaw       = useTransform(scrollYProgress, [0, 0.3, 0.5, 0.7, 1], [-100, -30, 0, -30, -80]);
+      // Start invisible, tilted back, slightly scaled
+      gsap.set(el, {
+        rotateX: 14,
+        scale: 0.96,
+        opacity: 0,
+        y: 40,
+        transformOrigin: "center top",
+        transformStyle: "preserve-3d",
+        willChange: "transform, opacity",
+      });
 
-  const SPRING = { stiffness: 52, damping: 20, mass: 0.85 };
-  const rotateX = useSpring(rotateXRaw, SPRING);
-  const y       = useSpring(yRaw,       SPRING);
-  const scale   = useSpring(scaleRaw,   SPRING);
-  const opacity = useSpring(opacityRaw, { stiffness: 68, damping: 24 });
-  const z       = useSpring(zRaw,       SPRING);
+      // Fire once when section enters viewport — snap to final state
+      ScrollTrigger.create({
+        trigger: containerRef.current,
+        start: "top 88%",   // fires when the section top is 88% down the viewport
+        once: true,
+        onEnter: () => {
+          gsap.to(el, {
+            rotateX: 0,
+            scale: 1,
+            opacity: 1,
+            y: 0,
+            duration: 1.1,
+            ease: "expo.out",
+            clearProps: "rotateX,scale,y,willChange",
+          });
+        },
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
     <div
       ref={containerRef}
       id={id}
       className={`relative w-full ${className}`}
-      style={{ perspective: "1100px", perspectiveOrigin: "50% 42%" }}
+      style={{ perspective: "1200px", perspectiveOrigin: "50% 0%" }}
     >
-      {/* ── Main content 3D plane — glass panel sliding over the GlobalBackground ── */}
-      <motion.div
-        style={{
-          rotateX,
-          y,
-          scale,
-          opacity,
-          z,
-          transformStyle: "preserve-3d",
-          transformOrigin: "center center",
-          willChange: "transform, opacity",
-          position: "relative",
-          zIndex: 1,
-        }}
-      >
+      <div ref={innerRef} style={{ position: "relative", zIndex: 1 }}>
         {children}
-      </motion.div>
+      </div>
     </div>
   );
 };

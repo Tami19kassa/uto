@@ -147,7 +147,7 @@ function OrbitRing({ radius, speed, tiltX, tiltZ, color, dashed = false, dotCoun
 }
 
 // ─── Floating particle ───────────────────────────────────────────────────────
-function Particle({ index, tiltX, tiltY }: { index: number; tiltX: number; tiltY: number }) {
+function Particle({ index, tiltX, tiltY }: { index: number; tiltX: number; tiltY: number; key?: React.Key }) {
   const angle = (index / 12) * Math.PI * 2;
   const baseR = 80 + (index % 3) * 28;
   return (
@@ -186,7 +186,7 @@ function Particle({ index, tiltX, tiltY }: { index: number; tiltX: number; tiltY
 }
 
 // ─── Energy pulse ring on click ──────────────────────────────────────────────
-function PulseRing({ id }: { id: number }) {
+function PulseRing({ id }: { id: number; key?: React.Key }) {
   return (
     <motion.div
       key={id}

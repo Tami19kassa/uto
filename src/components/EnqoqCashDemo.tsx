@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { Reveal } from "./Reveal";
 import { Riddle, HighScore } from "../types";
 import {
   Trophy,
@@ -272,45 +273,28 @@ export const EnqoqCashDemo: React.FC<EnqoqCashDemoProps> = ({ onUpdateScore }) =
           {/* LEFT: Branding Narrative & Lead-up */}
           <div className="lg:col-span-12 xl:col-span-5 space-y-8">
             <div className="space-y-4">
-              <span className="font-mono text-xs tracking-widest text-[#FF1E27] font-semibold flex items-center gap-2">
+              <Reveal effect="fade-right" duration={0.5} as="span" className="font-mono text-xs tracking-widest text-[#FF1E27] font-semibold flex items-center gap-2">
                 OUR HERO PROJECT <span className="w-1.5 h-1.5 rounded-full bg-brand" /> ENQOQ CASH
-              </span>
-              <motion.h2 
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="font-serif italic text-4xl sm:text-6xl text-neutral-900 dark:text-white tracking-tight leading-[1.05]"
-              >
+              </Reveal>
+              <Reveal effect="flip-up" duration={0.7} easing="ease-out-quart" as="h2" className="font-serif italic text-4xl sm:text-6xl text-neutral-900 dark:text-white tracking-tight leading-[1.05]">
                 Where Knowledge <br />
                 <span className="text-[#FF1E27] relative not-italic font-display font-black tracking-tighter">
                   Unlocks Fortunes
                   <span className="absolute bottom-1 left-0 w-full h-[3px] bg-brand" />
                 </span>
                 .
-              </motion.h2>
+              </Reveal>
             </div>
 
-            <motion.p 
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="text-neutral-600 dark:text-neutral-400 text-base leading-relaxed font-sans font-light max-w-xl"
-            >
+            <Reveal effect="fade-up" delay={0.1} as="p" className="text-neutral-600 dark:text-neutral-400 text-base leading-relaxed font-sans font-light max-w-xl">
               Derived from the traditional word <span className="text-neutral-800 dark:text-white font-medium italic">"Enqoqlsh" (እንቆቅልሽ)</span>, 
               Enqoq Cash is YouTobia Multimedia's high-traffic interactive web solution. 
               We revolutionized custom software design by allowing users to compete in live categorized 
               trivia, scoring points against rapid clocks to secure structural prizes and cash backings.
-            </motion.p>
+            </Reveal>
 
             <div className="space-y-4 pt-4 border-t border-neutral-200 dark:border-white/10 max-w-lg">
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2 }}
-                className="flex gap-4 items-start"
-              >
+              <Reveal effect="fade-up-right" delay={0.2} duration={0.5} className="flex gap-4 items-start">
                 <div className="bg-[#FF1E27]/5 p-2.5 rounded-lg border border-[#FF1E27]/20 shrink-0">
                   <Coins className="w-5 h-5 text-[#FF1E27]" />
                 </div>
@@ -320,15 +304,9 @@ export const EnqoqCashDemo: React.FC<EnqoqCashDemoProps> = ({ onUpdateScore }) =
                     Synchronized secure transaction channels back the gameplay to supply immediate rewards for top-tier competitors.
                   </p>
                 </div>
-              </motion.div>
+              </Reveal>
 
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.3 }}
-                className="flex gap-4 items-start"
-              >
+              <Reveal effect="fade-up-right" delay={0.3} duration={0.5} className="flex gap-4 items-start">
                 <div className="bg-[#FF1E27]/5 p-2.5 rounded-lg border border-[#FF1E27]/20 shrink-0">
                   <Users className="w-5 h-5 text-[#FF1E27]" />
                 </div>
@@ -338,7 +316,7 @@ export const EnqoqCashDemo: React.FC<EnqoqCashDemoProps> = ({ onUpdateScore }) =
                     Promoting intellectual scaling and wisdom through comprehensive questions in General Knowledge, Sport, Science, and History.
                   </p>
                 </div>
-              </motion.div>
+              </Reveal>
             </div>
           </div>
 

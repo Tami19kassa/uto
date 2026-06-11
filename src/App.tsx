@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
+import { gsap } from "./lib/gsap";
 import HugeHeader from "./components/HugeHeader";
 import HugeHero from "./components/HugeHero";
 import EcosystemSection from "./components/EcosystemSection";
@@ -12,149 +12,176 @@ import HugeFooter from "./components/HugeFooter";
 import CookieBanner from "./components/CookieBanner";
 import { AdminPanel } from "./components/AdminPanel";
 import ThreeDScrollWrapper from "./components/ThreeDScrollWrapper";
+import ScrollRotatingLogo from "./components/ScrollRotatingLogo";
 import { YouTobiaMarkSVG } from "./components/YutobiaLogo";
 import { fetchMediaItems, addLikeToItem, fetchSocialAccounts, fetchHeroVideoUrl } from "./lib/supabase";
 import { MediaItem, SocialAccount } from "./types";
 
 export default function App() {
-  const [activeSection, setActiveSection] = useState("home");
-  const [gameScore, setGameScore] = useState(0);
-  const [isBooting, setIsBooting] = useState(true);
-  const [loadingProgress, setLoadingProgress] = useState(0);
-  const [loadingPhase, setLoadingPhase] = useState("INITIALIZING SYSTEM...");
-  
-  // Theme Toggle Engine
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("theme") || "dark";
-  });
+  const [activeSection,   setActiveSection]   = useState("home");
+  const [gameScore,       setGameScore]        = useState(0);
+  const [isBooting,       setIsBooting]        = useState(true);
+  const [loadingProgress, setLoadingProgress]  = useState(0);
+  const [loadingPhase,    setLoadingPhase]     = useState("INITIALIZING SYSTEM...");
 
+  // ── Theme ──────────────────────────────────────────────────────────────
+  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "dark");
   useEffect(() => {
     const root = document.documentElement;
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
+    theme === "dark" ? root.classList.add("dark") : root.classList.remove("dark");
     localStorage.setItem("theme", theme);
   }, [theme]);
+  const toggleTheme = () => setTheme(prev => prev === "dark" ? "light" : "dark");
 
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
-  };
-
-  // Control Panel integration state
+  // ── Data ───────────────────────────────────────────────────────────────
   const [isAdminOpen, setIsAdminOpen] = useState(false);
-  const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
-  const [socials, setSocials] = useState<SocialAccount[]>([]);
-  const [heroVideoUrl, setHeroVideoUrl] = useState("");
+  const [mediaItems,  setMediaItems]  = useState<MediaItem[]>([]);
+  const [socials,     setSocials]     = useState<SocialAccount[]>([]);
+  const [heroVideoUrl,setHeroVideoUrl]= useState("");
 
   const refreshUiAll = async () => {
     try {
-      const media = await fetchMediaItems();
-      setMediaItems(media);
-
-      const soc = await fetchSocialAccounts();
-      setSocials(soc);
-
-      const video = await fetchHeroVideoUrl();
-      setHeroVideoUrl(video);
+      setMediaItems(await fetchMediaItems());
+      setSocials(await fetchSocialAccounts());
+      setHeroVideoUrl(await fetchHeroVideoUrl());
     } catch (e) {
-      console.error("Failed to load live database configs in main UI container:", e);
+      console.error("Failed to load live configs:", e);
     }
   };
-
-  useEffect(() => {
-    refreshUiAll();
-  }, []);
+  useEffect(() => { refreshUiAll(); }, []);
 
   const handleLikeItem = async (id: string) => {
     const updatedLikes = await addLikeToItem(id);
-    setMediaItems(prev => prev.map(item => {
-      if (item.id === id) {
-        return { ...item, likes: updatedLikes };
-      }
-      return item;
-    }));
+    setMediaItems(prev => prev.map(item => item.id === id ? { ...item, likes: updatedLikes } : item));
   };
 
-  // Trigger high score lookups 
+  // ── Splash / boot sequence ─────────────────────────────────────────────
+  // Splash refs
+  const splashRef   = useRef<HTMLDivElement>(null);
+  const curtainTopRef    = useRef<HTMLDivElement>(null);
+  const curtainBottomRef = useRef<HTMLDivElement>(null);
+  const splashLogoRef    = useRef<HTMLDivElement>(null);
+  const splashTitleRef   = useRef<HTMLHeadingElement>(null);
+  const splashSubRef     = useRef<HTMLParagraphElement>(null);
+  const splashTopBarRef  = useRef<HTMLDivElement>(null);
+  const splashProgressBarRef  = useRef<HTMLDivElement>(null);
+  const splashPhaseRef   = useRef<HTMLSpanElement>(null);
+  const splashPctRef     = useRef<HTMLSpanElement>(null);
+  const splashBottomRef  = useRef<HTMLDivElement>(null);
+
+  // Run boot counter + GSAP entrance on splash
+  useLayoutEffect(() => {
+    const el = splashRef.current;
+    if (!el) return;
+
+    // Entrance of splash content
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline();
+      tl.from(splashTopBarRef.current, { opacity:0, y:-10, duration:0.6, ease:"power3.out" }, 0)
+        .from(splashLogoRef.current,   { opacity:0, scale:0.9, filter:"blur(4px)", duration:0.8, ease:"power3.out" }, 0.1)
+        .from(splashTitleRef.current,  { opacity:0, duration:1.0, ease:"power2.out" }, 0.3)
+        .from(splashSubRef.current,    { opacity:0, duration:0.5, ease:"power2.out" }, 0.6)
+        .from(splashBottomRef.current, { opacity:0, duration:0.5, ease:"power2.out" }, 0.4);
+
+      // Continuous logo spin
+      gsap.to(splashLogoRef.current, {
+        rotate: 360, duration: 20, ease: "none", repeat: -1,
+      });
+    }, el);
+
+    // Progress counter
+    let startTimestamp: number | null = null;
+    const countDuration = 2200;
+    let animId: number;
+
+    const animate = (ts: number) => {
+      if (!startTimestamp) startTimestamp = ts;
+      const elapsed = ts - startTimestamp;
+      const ratio   = Math.min(elapsed / countDuration, 1);
+      const progress = Math.floor(ratio * 100);
+      setLoadingProgress(progress);
+
+      let phase = "INITIALIZING BRAND PORTAL...";
+      if (progress >= 20 && progress < 50) phase = "CALIBRATING TRIVIA ENGINE (የዕውቀት ማዕከል)...";
+      else if (progress >= 50 && progress < 75) phase = "COMPILING INTERACTIVE GAMESPACES...";
+      else if (progress >= 75 && progress < 95) phase = "POLISHING RENDER PIPELINES...";
+      else if (progress >= 95) phase = "SYSTEMS READY. WELCOME TO YOUTOBIA.";
+      setLoadingPhase(phase);
+
+      if (elapsed < countDuration) animId = requestAnimationFrame(animate);
+    };
+    animId = requestAnimationFrame(animate);
+
+    // Dismiss after 3 s
+    const bootTimer = setTimeout(() => {
+      // GSAP curtain exit
+      const exitTl = gsap.timeline({
+        onComplete: () => {
+          setIsBooting(false);
+          ctx.revert();
+        },
+      });
+      exitTl
+        .to(splashLogoRef.current,  { opacity:0, scale:0.93, filter:"blur(12px)", duration:0.4 }, 0)
+        .to(splashTitleRef.current, { opacity:0, duration:0.3 }, 0)
+        .to(splashBottomRef.current,{ opacity:0, duration:0.3 }, 0)
+        .to(curtainTopRef.current,    { y:"-100%", duration:1.1, ease:"yutobia.curtain" }, 0.15)
+        .to(curtainBottomRef.current, { y:"100%",  duration:1.1, ease:"yutobia.curtain" }, 0.15);
+    }, 3000);
+
+    return () => {
+      cancelAnimationFrame(animId);
+      clearTimeout(bootTimer);
+      ctx.revert();
+    };
+  }, []);
+
+  // Animate progress bar & phase text reactively
   useEffect(() => {
-    // Check if user has already played and stored a high score in this session
+    if (splashProgressBarRef.current) {
+      gsap.to(splashProgressBarRef.current, { width:`${loadingProgress}%`, duration:0.1, ease:"none" });
+    }
+    if (splashPhaseRef.current) {
+      gsap.fromTo(splashPhaseRef.current,
+        { opacity:0, y:5 },
+        { opacity:1, y:0, duration:0.3, ease:"power2.out" }
+      );
+    }
+    if (splashPctRef.current) {
+      splashPctRef.current.textContent = loadingProgress.toString().padStart(3,"0") + "%";
+    }
+  }, [loadingProgress, loadingPhase]);
+
+  // High score from localStorage
+  useEffect(() => {
     const stored = localStorage.getItem("enqoq_leaderboard");
     if (stored) {
       try {
         const scores = JSON.parse(stored);
         if (scores && scores.length > 0) {
-          // If the user name is saved in state we can fetch it, or just show high-score seed
-          const totalScores = scores.reduce((acc: number, item: any) => Math.max(acc, item.score), 0);
-          setGameScore(totalScores);
+          const top = scores.reduce((acc: number, item: any) => Math.max(acc, item.score), 0);
+          setGameScore(top);
         }
-      } catch (e) {
-        console.error("Failed to load scores for menu context", e);
-      }
+      } catch (_) {}
     }
-    
-    // Play detailed splash entry animation with ticking up percentage
-    let startTimestamp: number | null = null;
-    const countDuration = 2200; // Duration for counting up to 100
-    let animationFrameId: number;
-    
-    function animate(timestamp: number) {
-      if (!startTimestamp) startTimestamp = timestamp;
-      const elapsed = timestamp - startTimestamp;
-      const progressRatio = Math.min(elapsed / countDuration, 1);
-      const currentProgress = Math.floor(progressRatio * 100);
-      setLoadingProgress(currentProgress);
-      
-      if (currentProgress < 20) {
-        setLoadingPhase("INITIALIZING BRAND PORTAL...");
-      } else if (currentProgress < 50) {
-        setLoadingPhase("CALIBRATING TRIVIA ENGINE (የዕውቀት ማዕከል)...");
-      } else if (currentProgress < 75) {
-        setLoadingPhase("COMPILING INTERACTIVE GAMESPACES...");
-      } else if (currentProgress < 95) {
-        setLoadingPhase("POLISHING RENDER PIPELINES...");
-      } else {
-        setLoadingPhase("SYSTEMS READY. WELCOME TO YOUTOBIA.");
-      }
-      
-      if (elapsed < countDuration) {
-        animationFrameId = requestAnimationFrame(animate);
-      }
-    }
-    
-    animationFrameId = requestAnimationFrame(animate);
-    
-    // Hold at 100% stable state for a moment before dropping curtain
-    const bootTimer = setTimeout(() => {
-      setIsBooting(false);
-    }, 3000);
-
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-      clearTimeout(bootTimer);
-    };
   }, []);
 
-  // Sync scroll positions to identify active tabs in desktop header
+  // ── Scroll spy ─────────────────────────────────────────────────────────
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ["home", "ecosystem", "enqoq-cash", "studio", "vision", "media-hub", "connect"];
+      const sections = ["home","ecosystem","enqoq-cash","studio","vision","media-hub","connect"];
       const scrollPos = window.scrollY + 200;
-
       for (const sec of sections) {
-        const element = document.getElementById(sec);
-        if (element) {
-          const top = element.offsetTop;
-          const height = element.offsetHeight;
-          if (scrollPos >= top && scrollPos < top + height) {
+        const el = document.getElementById(sec);
+        if (el) {
+          const { offsetTop, offsetHeight } = el;
+          if (scrollPos >= offsetTop && scrollPos < offsetTop + offsetHeight) {
             setActiveSection(sec);
           }
         }
       }
     };
-
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -167,155 +194,94 @@ export default function App() {
   };
 
   const handleUpdateScore = (score: number) => {
-    setGameScore((prev) => Math.max(prev, score));
+    setGameScore(prev => Math.max(prev, score));
   };
 
   return (
-    <div className="relative min-h-screen bg-white dark:bg-[#060606] text-neutral-900 overflow-x-hidden font-sans">
-      
-      {/* Splash loader */}
-      {/* Huge Agency Splash Curtain Animation Loader */}
-      <AnimatePresence>
-        {isBooting && (
-          <motion.div
-            key="splash-wrapper"
-            className="fixed inset-0 z-50 pointer-events-none"
-            exit={{
-              transition: { staggerChildren: 0.1 }
-            }}
-          >
-            {/* Top curtain sliding upwards */}
-            <motion.div
-              className="absolute left-0 top-0 w-full h-[50.5vh] bg-neutral-950 border-b border-brand/10 pointer-events-auto"
-              initial={{ y: 0 }}
-              exit={{ y: "-100%" }}
-              transition={{ duration: 1.1, ease: [0.85, 0, 0.15, 1], delay: 0.2 }}
-            />
-            
-            {/* Bottom curtain sliding downwards */}
-            <motion.div
-              className="absolute left-0 bottom-0 w-full h-[50.5vh] bg-neutral-950 border-t border-brand/10 pointer-events-auto"
-              initial={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ duration: 1.1, ease: [0.85, 0, 0.15, 1], delay: 0.2 }}
-            />
+    <div className="relative min-h-screen bg-white dark:bg-[#060606] text-neutral-900 font-sans" style={{ overflowX: "clip" }}>
 
-            {/* Subtle light pulse background */}
-            <motion.div 
-              className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,30,39,0.06)_0%,transparent_70%)] pointer-events-none"
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-            />
+      {/* ── Global 3D logo background (scroll-driven rotation) ───────── */}
+      <ScrollRotatingLogo />
 
-            {/* Glowing lines across the curtain to represent architectural scanning */}
-            <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[1px] w-full bg-[#FF1E27]/20 pointer-events-none z-10" />
+      {/* ── GSAP Splash Curtain ──────────────────────────────────────────── */}
+      {isBooting && (
+        <div ref={splashRef} className="fixed inset-0 z-50 pointer-events-none">
+          {/* Top curtain */}
+          <div ref={curtainTopRef}
+            className="absolute left-0 top-0 w-full h-[50.5vh] bg-neutral-950 border-b border-brand/10 pointer-events-auto" />
+          {/* Bottom curtain */}
+          <div ref={curtainBottomRef}
+            className="absolute left-0 bottom-0 w-full h-[50.5vh] bg-neutral-950 border-t border-brand/10 pointer-events-auto" />
 
-            {/* Content Centered */}
-            <div className="absolute inset-0 flex flex-col items-center justify-between p-8 sm:p-12 text-center pointer-events-none z-20">
-              
-              {/* Top Meta Ticker */}
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20, filter: "blur(4px)" }}
-                transition={{ duration: 0.6 }}
-                className="w-full flex justify-between items-center max-w-7xl font-mono text-[10px] tracking-widest text-[#FF1E27] pointer-events-auto select-none"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-brand animate-ping" />
-                  <span>YUTOBIA SYSTEM CORE v4.5</span>
-                </div>
-                <div>
-                  <span>LOC_CODE: ETH_ADDIS_ABABA</span>
-                </div>
-              </motion.div>
+          {/* Red radial glow behind center */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,30,39,0.06)_0%,transparent_70%)] pointer-events-none" />
 
-              {/* Central Premium Branding and Pulsing Logo */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9, filter: "blur(4px)" }}
-                animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                exit={{ opacity: 0, scale: 0.93, filter: "blur(12px)" }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-                className="flex flex-col items-center justify-center space-y-8 pointer-events-auto"
-              >
-                <div className="relative">
-                  {/* Outer atmospheric neon pulse blur */}
-                  <div className="absolute inset-0 bg-[#FF1E27] rounded-full blur-[45px] opacity-20 scale-110 animate-pulse" />
-                  
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
-                    className="relative z-10"
-                  >
-                    <YouTobiaMarkSVG size={95} id="splash" />
-                  </motion.div>
-                </div>
+          {/* Centerline */}
+          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-px w-full bg-[#FF1E27]/20 pointer-events-none z-10" />
 
-                <div className="space-y-4">
-                  <motion.h1
-                    initial={{ tracking: "-0.05em", opacity: 0 }}
-                    animate={{ tracking: "0.03em", opacity: 1 }}
-                    transition={{ delay: 0.2, duration: 1.0 }}
-                    className="font-serif italic text-6xl text-white select-none leading-none"
-                  >
-                    YouTobia
-                  </motion.h1>
-                  <p className="text-[10px] font-mono tracking-[0.55em] text-white/50 select-none uppercase">
-                    The Multimedia Standard
-                  </p>
-                </div>
-              </motion.div>
+          {/* Content */}
+          <div className="absolute inset-0 flex flex-col items-center justify-between p-8 sm:p-12 text-center pointer-events-none z-20">
 
-              {/* Bottom Tickers & Calibration Progress */}
-              <div className="w-full max-w-xl space-y-6 pointer-events-auto">
-                <div className="space-y-2.5">
-                  <div className="flex justify-between items-end font-mono text-[10px] select-none">
-                    <motion.span 
-                      key={loadingPhase}
-                      initial={{ opacity: 0, y: 5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="text-white/45 tracking-wider font-light"
-                    >
-                      {loadingPhase}
-                    </motion.span>
-                    <span className="text-[#FF1E27] font-semibold text-sm tracking-tight font-mono">
-                      {loadingProgress.toString().padStart(3, '0')}%
-                    </span>
-                  </div>
-
-                  {/* Horizontal Glowing Tech progress trace bar */}
-                  <div className="h-[2px] w-full bg-white/5 relative overflow-hidden rounded-full">
-                    <motion.div 
-                      className="absolute left-0 top-0 h-full bg-[#FF1E27]"
-                      animate={{ width: `${loadingProgress}%` }}
-                      transition={{ ease: "linear", duration: 0.1 }}
-                      style={{
-                        boxShadow: "0 0 10px #FF1E27, 0 0 4px #FF1E27"
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 0.3 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="font-mono text-[8px] text-white/40 tracking-[0.25em] flex justify-center gap-6 select-none"
-                >
-                  <span>GRID // ACTIVE</span>
-                  <span>ACCELERATOR // WEBGL_OK</span>
-                  <span>CULTURE_VAULT // SYNCED</span>
-                </motion.div>
+            {/* Top bar */}
+            <div ref={splashTopBarRef}
+              className="w-full flex justify-between items-center max-w-7xl font-mono text-[10px] tracking-widest text-[#FF1E27] select-none">
+              <div className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-brand animate-ping" />
+                <span>YUTOBIA SYSTEM CORE v4.5</span>
               </div>
-
+              <span>LOC_CODE: ETH_ADDIS_ABABA</span>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
+            {/* Central logo + wordmark */}
+            <div className="flex flex-col items-center justify-center space-y-8">
+              <div className="relative">
+                <div className="absolute inset-0 bg-[#FF1E27] rounded-full blur-[45px] opacity-20 scale-110 animate-pulse" />
+                <div ref={splashLogoRef} className="relative z-10">
+                  <YouTobiaMarkSVG size={95} id="splash" />
+                </div>
+              </div>
+              <div className="space-y-4">
+                <h1 ref={splashTitleRef}
+                  className="font-serif italic text-6xl text-white select-none leading-none">
+                  YouTobia
+                </h1>
+                <p ref={splashSubRef}
+                  className="text-[10px] font-mono tracking-[0.55em] text-white/50 select-none uppercase">
+                  The Multimedia Standard
+                </p>
+              </div>
+            </div>
+
+            {/* Bottom progress */}
+            <div ref={splashBottomRef} className="w-full max-w-xl space-y-6">
+              <div className="space-y-2.5">
+                <div className="flex justify-between items-end font-mono text-[10px] select-none">
+                  <span ref={splashPhaseRef} className="text-white/45 tracking-wider font-light">
+                    {loadingPhase}
+                  </span>
+                  <span ref={splashPctRef} className="text-[#FF1E27] font-semibold text-sm tracking-tight font-mono">
+                    000%
+                  </span>
+                </div>
+                <div className="h-[2px] w-full bg-white/5 relative overflow-hidden rounded-full">
+                  <div ref={splashProgressBarRef}
+                    className="absolute left-0 top-0 h-full bg-[#FF1E27]"
+                    style={{ width: "0%", boxShadow: "0 0 10px #FF1E27, 0 0 4px #FF1E27" }} />
+                </div>
+              </div>
+              <div className="font-mono text-[8px] text-white/40 tracking-[0.25em] flex justify-center gap-6 select-none opacity-30">
+                <span>GRID // ACTIVE</span>
+                <span>ACCELERATOR // WEBGL_OK</span>
+                <span>CULTURE_VAULT // SYNCED</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* ── Page content ────────────────────────────────────────────────── */}
       <div className="relative flex flex-col" style={{ zIndex: 1 }}>
-        {/* Core Sticky Header */}
         <HugeHeader
           onNavigate={handleNavigate}
           activeSection={activeSection}
@@ -324,61 +290,44 @@ export default function App() {
           onToggleTheme={toggleTheme}
         />
 
-        {/* SECTION 1: HOME */}
         <ThreeDScrollWrapper id="home">
-          <HugeHero
-            onPlayDemo={() => handleNavigate("enqoq-cash")}
-            onNavigate={handleNavigate}
-            gameScore={gameScore}
-            heroVideoUrl={heroVideoUrl}
-          />
+          <HugeHero onPlayDemo={() => handleNavigate("enqoq-cash")}
+            onNavigate={handleNavigate} gameScore={gameScore} heroVideoUrl={heroVideoUrl} />
         </ThreeDScrollWrapper>
 
-        {/* SECTION 2: THE YOUTOBIA ECOSYSTEM */}
         <ThreeDScrollWrapper id="ecosystem">
           <EcosystemSection />
         </ThreeDScrollWrapper>
 
-        {/* SECTION 3: ENQOQ CASH GAME LOOP STORY */}
         <ThreeDScrollWrapper>
           <StoryScrollJourney onPlayDemo={() => handleNavigate("enqoq-cash")} />
         </ThreeDScrollWrapper>
 
-        {/* SECTION 4: ENQOQ CASH PLAYABLE DEMO */}
         <ThreeDScrollWrapper id="enqoq-cash">
           <EnqoqCashDemo onUpdateScore={handleUpdateScore} />
         </ThreeDScrollWrapper>
 
-        {/* SECTION 5: THE STUDIO / SUB-BRANDS SHOWCASE */}
         <ThreeDScrollWrapper id="studio">
           <StudioShowcase onPlayDemo={() => handleNavigate("enqoq-cash")} />
         </ThreeDScrollWrapper>
 
-        {/* SECTION 6: VISION FORWARD */}
         <ThreeDScrollWrapper id="vision">
           <VisionSection />
         </ThreeDScrollWrapper>
 
-        {/* SECTION 7: CULTURAL JOURNAL & VLOGS */}
         <ThreeDScrollWrapper id="media-hub">
-          <MediaHub
-            items={mediaItems}
-            onLike={handleLikeItem}
-          />
+          <MediaHub items={mediaItems} onLike={handleLikeItem} />
         </ThreeDScrollWrapper>
 
-        {/* SECTION 8: CONTACT */}
         <ThreeDScrollWrapper id="connect">
           <HugeFooter onNavigate={handleNavigate} socials={socials} />
         </ThreeDScrollWrapper>
 
-        {/* PERSISTENT CUSTOM COOKIE REGULATION */}
         <CookieBanner />
 
-        {/* MASTER ADMIN CONTROL PANEL MODAL OVERLAY */}
-        <AdminPanel 
-          isOpen={isAdminOpen} 
-          onClose={() => setIsAdminOpen(false)} 
+        <AdminPanel
+          isOpen={isAdminOpen}
+          onClose={() => setIsAdminOpen(false)}
           onSettingsUpdated={refreshUiAll}
         />
       </div>
