@@ -1,0 +1,6 @@
+{
+  "name": "YouTobia Multimedia Hub",
+  "description": "High-contrast media hub featuring historical Amharic riddles (Enqoq Cash), live vlogs/blogs, and a secure Admin Panel integrated with TiDB Cloud Serverless storage.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

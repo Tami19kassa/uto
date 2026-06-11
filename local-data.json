@@ -1,0 +1,109 @@
+{
+  "mediaItems": [
+    {
+      "id": "1",
+      "type": "blog",
+      "title": "The Theoretical Mechanics of Modern High-Stakes Trivia",
+      "author": "Alazar Tekle",
+      "date": "June 8, 2026",
+      "duration": "5 min read",
+      "category": "TRIVIA METRICS",
+      "excerpt": "How structured, rapid-fire questioning across Science, History, and Sports serves as a robust metric of cognitive agility and decision speed.",
+      "content": "For centuries, humans have used testing protocols as standard frameworks of logical calibration. On the modern Enqoq Cash platform, this is revolutionized. Trivia is no longer just home entertainment; it is an optimized transaction of cognitive agility. By scaling challenges across four core domains—General Knowledge, Sports, Science, and History—we empower players to convert rapid factual recall into immediate digital credit. \n\nHistorically, intellectual agility was verbal. Today, our synchronized digital platform, Enqoq Cash, maps this competitive transaction onto modern web architecture, where high-speed correct answers trigger instant micro-reward validations.",
+      "tags": [
+        "Aesthetics",
+        "Agility",
+        "Game Theory"
+      ],
+      "likes": 142,
+      "gradientTheme": "from-red-950 via-neutral-900 to-black"
+    },
+    {
+      "id": "2",
+      "type": "vlog",
+      "title": "YUTOBIA v4.0: Modernizing Ge'ez Typography inside Addis Ababa",
+      "author": "Selam Kassahun",
+      "date": "June 5, 2026",
+      "duration": "8 min watch",
+      "category": "VLOGS / DESIGN",
+      "excerpt": "A mini-documentary following YouTobia's design team through the streets of Addis Ababa, transforming urban Ge'ez signage into high-contrast digital layouts.",
+      "content": "In this vlog, our design director Selam is sharing our vision of bringing Ge'ez typography into 2026 high-contrast digital layouts. We visit old printers around Piazza, study historical manuscripts, and translate these physical ink artifacts into responsive CSS elements, absolute vector illustrations, and digital interface frames.",
+      "videoUrl": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "tags": [
+        "Typography",
+        "Addis Ababa",
+        "Ge'ez"
+      ],
+      "likes": 219,
+      "gradientTheme": "from-neutral-900 via-red-950 to-neutral-900"
+    },
+    {
+      "id": "3",
+      "type": "blog",
+      "title": "Designing for Focus: Why We Banned Purple Gradients & AI Slop",
+      "author": "Tewodros Yohannes",
+      "date": "May 28, 2026",
+      "duration": "4 min read",
+      "category": "CREATIVE POLICY",
+      "excerpt": "An exploration of YouTobia Multimedia's strict branding: why high-octane red, deep black, and absolute white demand user focus over standard automated web styling.",
+      "content": "Web design in the mid-2020s has fallen prey to a passive uniformity. The ubiquity of generic purple-to-blue gradients, rounded glassy card templates, and unrequested mock terminal logs has desensitized our eyes. \n\nAt YouTobia, we adhere to a policy of Architectural Honesty. \n\nWe choose absolute red (#FF1E27) because it triggers high visual alerts, paired with razor-sharp corners, strong structural grids, and expansive pitch-black backgrounds. We construct layouts where content is the singular hero. If an element cannot be targeted, debugged, and interactively justified, it is deleted. By designing with high-contrast conviction, we demand the user's absolute visual presence.",
+      "tags": [
+        "Branding",
+        "UI/UX",
+        "Art Direction"
+      ],
+      "likes": 98,
+      "gradientTheme": "from-neutral-900 via-neutral-900 to-neutral-950"
+    },
+    {
+      "id": "4",
+      "type": "vlog",
+      "title": "Walkthrough: Conquering the 'Hard' Trivia Tier in Enqoq Cash",
+      "author": "Robel Melaku",
+      "date": "May 15, 2026",
+      "duration": "12 min watch",
+      "category": "VLOGS / LEADERBOARD",
+      "excerpt": "Our top gamer Robel breaks down the highest-tier factual questions featured in the active platform and shows how to maximize response times.",
+      "content": "Robel walks you through how to master advanced trivia parameters in science, astrophysics, and world History on the active Enqoq Cash dashboard. He highlights historical literature roots of the questions, tells you how to spot fast semantic traps, and shows how players can optimize their virtualization speed to cache prizes.",
+      "videoUrl": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "tags": [
+        "Walkthrough",
+        "Enqoq Cash",
+        "Gaming"
+      ],
+      "likes": 312,
+      "gradientTheme": "from-black via-red-950/40 to-neutral-900"
+    }
+  ],
+  "socialAccounts": [
+    {
+      "id": "s1",
+      "platform": "Youtube",
+      "label": "YouTobia TV",
+      "url": "https://youtube.com/@youtobia-multimedia",
+      "isActive": true
+    },
+    {
+      "id": "s2",
+      "platform": "Telegram",
+      "label": "YouTobia Creative Lab",
+      "url": "https://t.me/youtobia_multimedia",
+      "isActive": true
+    },
+    {
+      "id": "s3",
+      "platform": "Twitter",
+      "label": "YouTobiaX",
+      "url": "https://twitter.com/youtobia_tech",
+      "isActive": true
+    },
+    {
+      "id": "s4",
+      "platform": "Instagram",
+      "label": "youtobia.art",
+      "url": "https://instagram.com/youtobia.multimedia",
+      "isActive": true
+    }
+  ],
+  "heroVideoUrl": "https://cdn.pixabay.com/video/2021/04/12/70860-537333552_large.mp4"
+}
