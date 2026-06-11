@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ArrowUpRight, Check, Compass, Monitor, Volume2, Shield, Heart } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
+import { SectionBackground } from "./SectionBackground";
 
 interface StudioShowcaseProps {
   onPlayDemo: () => void;
@@ -66,7 +67,8 @@ export const StudioShowcase: React.FC<StudioShowcaseProps> = ({ onPlayDemo }) =>
   ];
 
   return (
-    <section id="studio" className="relative py-24 md:py-32 bg-white/88 dark:bg-[#060606]/88 border-t border-rose-100 px-6 md:px-12 overflow-hidden">
+    <section id="studio" className="relative py-24 md:py-32 bg-[#fafafa] dark:bg-[#060606] border-t border-rose-100 dark:border-white/8 px-6 md:px-12 overflow-hidden">
+      <SectionBackground variant="studio" />
       <div className="max-w-7xl mx-auto space-y-20 relative z-10">
         {/* Typographic Intro */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end border-b border-neutral-200 pb-12">

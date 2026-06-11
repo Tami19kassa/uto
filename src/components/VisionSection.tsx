@@ -1,41 +1,6 @@
-import React, { useRef } from "react";
-import { motion, useScroll, useTransform, useSpring } from "motion/react";
-import { YouTobiaMarkSVG } from "./YutobiaLogo";
-
-// ─── 3D rotating logo background ────────────────────────────────────────────
-function VisionLogoBg({
-  scrollYProgress,
-}: {
-  scrollYProgress: ReturnType<typeof useScroll>["scrollYProgress"];
-}) {
-  const rotateY = useTransform(scrollYProgress, [0, 1], [30, -30]);
-  const rotateX = useTransform(scrollYProgress, [0, 0.5, 1], [-10, 0, 10]);
-  const scale   = useTransform(scrollYProgress, [0, 0.5, 1], [0.8, 1.1, 0.8]);
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
-
-  const sY = useSpring(rotateY, { stiffness: 38, damping: 18 });
-  const sX = useSpring(rotateX, { stiffness: 38, damping: 18 });
-  const sS = useSpring(scale,   { stiffness: 38, damping: 18 });
-
-  return (
-    <motion.div
-      aria-hidden
-      className="absolute inset-0 flex items-center justify-center pointer-events-none"
-      style={{ perspective: "900px", opacity }}
-    >
-      <motion.div
-        style={{
-          rotateY: sY,
-          rotateX: sX,
-          scale: sS,
-          transformStyle: "preserve-3d",
-        }}
-      >
-        <YouTobiaMarkSVG size={360} id="visionBg" />
-      </motion.div>
-    </motion.div>
-  );
-}
+import React from "react";
+import { motion } from "motion/react";
+import { SectionBackground } from "./SectionBackground";
 
 const PILLARS = [
   {
@@ -61,42 +26,23 @@ const PILLARS = [
 ];
 
 export const VisionSection: React.FC = () => {
-  const sectionRef = useRef<HTMLDivElement>(null);
-
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"],
-  });
 
   return (
     <section
-      ref={sectionRef}
       id="vision"
-      className="relative bg-neutral-950 overflow-hidden py-28 md:py-40"
+      className="relative bg-neutral-950 overflow-hidden py-28 md:py-40 border-t border-white/8"
     >
-      {/* 3D logo background */}
-      <VisionLogoBg scrollYProgress={scrollYProgress} />
-
-      {/* Ambient glow */}
+      <SectionBackground variant="vision" />
+      {/* Ambient glow — complements the SectionBackground */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 70% 55% at 50% 55%, rgba(255,30,39,0.07) 0%, transparent 70%)",
+            "radial-gradient(ellipse 70% 55% at 50% 55%, rgba(255,30,39,0.05) 0%, transparent 70%)",
         }}
       />
 
-      {/* Dot grid */}
-      <div className="absolute inset-0 pointer-events-none opacity-15">
-        <svg width="100%" height="100%">
-          <defs>
-            <pattern id="visionDots" width="32" height="32" patternUnits="userSpaceOnUse">
-              <circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.3)" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#visionDots)" />
-        </svg>
-      </div>
+      {/* Dot grid removed — GlobalBackground provides the dot pattern */}
 
       <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10 space-y-20">
 

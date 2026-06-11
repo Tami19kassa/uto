@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Play, ArrowDown, ArrowUpRight, Award, HelpCircle } from "lucide-react";
+import { Play, ArrowDown, ArrowUpRight } from "lucide-react";
 import { InteractiveYutobiaStage } from "./InteractiveYutobiaStage";
 
 interface HeroProps {
@@ -54,7 +54,7 @@ export const HugeHero: React.FC<HeroProps> = ({
   return (
     <div
       ref={containerRef}
-      className="relative min-h-screen bg-white/90 dark:bg-[#060606]/90 overflow-hidden flex flex-col justify-center pt-28 pb-16 px-6 md:px-12 transition-colors duration-500"
+      className="relative min-h-screen bg-white dark:bg-[#060606] overflow-hidden flex flex-col justify-center pt-28 pb-16 px-6 md:px-12 transition-colors duration-500"
       style={{
         "--x": `${mousePosition.x}%`,
         "--y": `${mousePosition.y}%`,
@@ -68,7 +68,7 @@ export const HugeHero: React.FC<HeroProps> = ({
           loop
           muted
           playsInline
-          className="absolute min-w-full min-h-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 object-cover opacity-[0.06] dark:opacity-[0.14] filter pointer-events-none transition-all duration-[1500s] hue-rotate-[340deg] contrast-125 saturate-150"
+          className="absolute min-w-full min-h-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 object-cover opacity-[0.06] dark:opacity-[0.14] filter pointer-events-none transition-all duration-[1500ms] hue-rotate-[340deg] contrast-125 saturate-150"
           src={heroVideoUrl || "https://cdn.pixabay.com/video/2021/04/12/70860-537333552_large.mp4"}
         />
         {/* Editorial overlay filtering */}
@@ -144,7 +144,7 @@ export const HugeHero: React.FC<HeroProps> = ({
               className="inline-flex items-center gap-2 bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-white/10 px-4 py-2 rounded-full font-mono text-xs tracking-widest text-[#FF1E27] font-semibold shadow-xs shrink-0 self-start transition-colors duration-500"
             >
               <span className="w-2.5 h-2.5 rounded-full bg-brand animate-pulse" />
-              <span>CREATIVE DESIGN & TECHNOLOGY LAB</span>
+              <span>YOUTOBIA MULTIMEDIA P.L.C.</span>
             </motion.div>
 
             <div className="h-6 overflow-hidden relative min-w-[320px] self-start md:self-center">
@@ -229,7 +229,7 @@ export const HugeHero: React.FC<HeroProps> = ({
             </h1>
           </div>
 
-          {/* Intro Description Block with side-links & Perfect Typographic Contrast */}
+          {/* Intro Description Block */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -237,7 +237,7 @@ export const HugeHero: React.FC<HeroProps> = ({
               transition={{ duration: 0.8, delay: 0.4 }}
               className="lg:col-span-7 space-y-6"
             >
-              <div className="font-serif italic text-2xl md:text-3.5xl text-neutral-800 dark:text-neutral-200 leading-snug tracking-tight max-w-xl transition-colors duration-500">
+              <div className="font-serif italic text-2xl md:text-4xl text-neutral-800 dark:text-neutral-200 leading-snug tracking-tight max-w-xl transition-colors duration-500">
                 A bold vision uniting creativity, technology, entertainment,
                 information, and education — delivered through a powerful
                 ecosystem of purpose-built brands.
@@ -245,28 +245,25 @@ export const HugeHero: React.FC<HeroProps> = ({
               <p className="text-neutral-600 dark:text-neutral-400 text-base leading-relaxed font-sans font-light max-w-xl transition-colors duration-500">
                 YouTobia Multimedia P.l.C. is a holding company that unites five specialized sub-brands — <span className="text-[#FF1E27] font-semibold">EnqoqCash</span>, <span className="text-neutral-700 dark:text-neutral-300 font-semibold">QenaView</span>, <span className="text-neutral-700 dark:text-neutral-300 font-semibold">eTop Production</span>, <span className="text-neutral-700 dark:text-neutral-300 font-semibold">YentaBarsiisaa</span>, and <span className="text-neutral-700 dark:text-neutral-300 font-semibold">MirXog</span> — each designed to lead in its domain of the multimedia landscape.
               </p>
- 
-              {/* Action buttons with Micro-interactions */}
               <div className="flex flex-wrap items-center gap-4">
                 <button
                   onClick={onPlayDemo}
-                  className="flex items-center gap-2 bg-[#FF1E27] hover:bg-[#C90E16] text-white font-display font-semibold select-none px-6 py-4 rounded-xl transition-all duration-300 scale-100 hover:scale-[1.03] active:scale-95 shadow-lg shadow-brand/20 cursor-pointer group"
+                  className="flex items-center gap-2 bg-[#FF1E27] hover:bg-brand-dark text-white font-display font-semibold select-none px-6 py-4 rounded-xl transition-all duration-300 scale-100 hover:scale-[1.03] active:scale-95 shadow-lg shadow-brand/20 cursor-pointer group"
                 >
                   <Play className="w-5 h-5 fill-white" />
                   <span>PLAY ENQOQ CASH DEMO</span>
                 </button>
- 
                 <button
                   onClick={() => onNavigate("studio")}
                   className="flex items-center gap-2 bg-neutral-100 hover:bg-neutral-200 dark:bg-white/5 dark:hover:bg-white/10 border border-neutral-200 dark:border-white/10 text-neutral-800 dark:text-neutral-200 font-mono text-xs tracking-widest px-6 py-4 rounded-xl transition-all duration-300 cursor-pointer"
                 >
-                  <span>EXPLORE PROJECT REPERTOIRE</span>
+                  <span>EXPLORE THE ECOSYSTEM</span>
                   <ArrowUpRight className="w-4 h-4 text-neutral-500 dark:text-neutral-400" />
                 </button>
               </div>
             </motion.div>
- 
-            {/* Interactive Logo-Bee Spline Stage (Right side on desktop) */}
+
+            {/* Interactive Stage — right column */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}

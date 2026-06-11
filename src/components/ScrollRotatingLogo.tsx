@@ -184,8 +184,20 @@ export const ScrollRotatingLogo: React.FC = () => {
       rafRef.current = requestAnimationFrame(draw);
     };
 
+    const handleVisibility = () => {
+      if (document.hidden) {
+        cancelAnimationFrame(rafRef.current);
+      } else {
+        rafRef.current = requestAnimationFrame(draw);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+
     rafRef.current = requestAnimationFrame(draw);
-    return () => cancelAnimationFrame(rafRef.current);
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
   }, []);
 
   return (

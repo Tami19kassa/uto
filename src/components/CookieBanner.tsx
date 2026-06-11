@@ -44,11 +44,9 @@ export const CookieBanner: React.FC = () => {
     setShowBanner(false);
   };
 
-  if (!showBanner) return null;
-
   return (
     <AnimatePresence>
-      <motion.div
+      {showBanner && <motion.div
         initial={{ y: 150, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 150, opacity: 0 }}
@@ -166,7 +164,7 @@ export const CookieBanner: React.FC = () => {
             )}
           </AnimatePresence>
         </div>
-      </motion.div>
+      </motion.div>}
     </AnimatePresence>
   );
 };

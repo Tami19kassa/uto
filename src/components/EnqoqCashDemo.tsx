@@ -16,6 +16,7 @@ import {
   Coins,
   Ticket
 } from "lucide-react";
+import { SectionBackground } from "./SectionBackground";
 
 // Curated trivia questions encompassing General Knowledge, Sports, Science, and History
 const ENQOQ_RIDDLES: Riddle[] = [
@@ -144,6 +145,7 @@ export const EnqoqCashDemo: React.FC<EnqoqCashDemoProps> = ({ onUpdateScore }) =
   // Audio / feedback simulated states
   const [shakeActive, setShakeActive] = useState(false);
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const scoreRef = useRef(0);
 
   // Load riddles matching selected difficulty
   const activeRiddles = ENQOQ_RIDDLES.filter(
@@ -186,6 +188,7 @@ export const EnqoqCashDemo: React.FC<EnqoqCashDemoProps> = ({ onUpdateScore }) =
     if (!nickname.trim()) return;
     
     setScore(0);
+    scoreRef.current = 0;
     setRightAnswersCount(0);
     setCurrentQuestionIndex(0);
     setSelectedChoice(null);
@@ -208,7 +211,9 @@ export const EnqoqCashDemo: React.FC<EnqoqCashDemoProps> = ({ onUpdateScore }) =
     if (actualSelection === currentRiddle.answer) {
       // Clean answer
       const pointsEarned = currentRiddle.prizeValue + (timeRemaining * 10);
-      setScore((prev) => prev + pointsEarned);
+      const newScore = scoreRef.current + pointsEarned;
+      scoreRef.current = newScore;
+      setScore(newScore);
       setRightAnswersCount((prev) => prev + 1);
     } else {
       // Incorrect answer, shake screen
@@ -230,7 +235,7 @@ export const EnqoqCashDemo: React.FC<EnqoqCashDemoProps> = ({ onUpdateScore }) =
       
       const newScoreRecord: HighScore = {
         name: nickname.trim(),
-        score: score,
+        score: scoreRef.current,
         difficulty: selectedDifficulty,
         date: new Date().toISOString().split("T")[0],
         ticketId: uniqueId
@@ -242,7 +247,7 @@ export const EnqoqCashDemo: React.FC<EnqoqCashDemoProps> = ({ onUpdateScore }) =
 
       setLeaderboard(updatedLeaderboard);
       localStorage.setItem("enqoq_leaderboard", JSON.stringify(updatedLeaderboard));
-      onUpdateScore(score); // Send scoreboard back up to app context!
+      onUpdateScore(scoreRef.current); // Send scoreboard back up to app context!
       
       setGameState("results");
     }
@@ -254,7 +259,8 @@ export const EnqoqCashDemo: React.FC<EnqoqCashDemoProps> = ({ onUpdateScore }) =
   };
 
   return (
-    <section id="enqoq-cash" className="relative py-24 md:py-32 bg-white/88 dark:bg-[#060606]/88 overflow-hidden border-t border-rose-100">
+    <section id="enqoq-cash" className="relative py-24 md:py-32 bg-white dark:bg-[#060606] overflow-hidden border-t border-rose-100 dark:border-white/8">
+      <SectionBackground variant="enqoq" />
       {/* Absolute Graphics */}
       <div className="absolute top-[-5%] left-[-10%] w-96 h-96 bg-brand/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-[-5%] right-[-10%] w-96 h-96 bg-brand-orange/5 blur-[120px] rounded-full pointer-events-none" />
@@ -783,7 +789,7 @@ export const EnqoqCashDemo: React.FC<EnqoqCashDemoProps> = ({ onUpdateScore }) =
                       onClick={() => {
                         setIsSaved(true);
                       }}
-                      className="bg-[#FF1E27] hover:bg-[#AA0065] text-white font-display font-bold py-3.5 px-6 rounded-xl cursor-pointer transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-brand/20"
+                      className="bg-[#FF1E27] hover:bg-[#C90E16] text-white font-display font-bold py-3.5 px-6 rounded-xl cursor-pointer transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-brand/20"
                     >
                       <Award className="w-4 h-4" />
                       <span>SECURE CERTIFICATE</span>

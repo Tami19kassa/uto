@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { 
   BookOpen, 
@@ -12,6 +12,7 @@ import {
   ThumbsUp, 
   Globe
 } from "lucide-react";
+import { SectionBackground } from "./SectionBackground";
 import { MediaItem } from "../types";
 
 interface MediaHubProps {
@@ -27,7 +28,6 @@ export const MediaHub: React.FC<MediaHubProps> = ({ items, onLike }) => {
   const [selectedBlog, setSelectedBlog] = useState<MediaItem | null>(null);
   const [selectedVlog, setSelectedVlog] = useState<MediaItem | null>(null);
   const [vlogPlaying, setVlogPlaying] = useState(false);
-  const [videoProgress, setVideoProgress] = useState(35); // simulated progress line
 
   // Filter & Search logic
   const filteredItems = items.filter(item => {
@@ -41,22 +41,9 @@ export const MediaHub: React.FC<MediaHubProps> = ({ items, onLike }) => {
     return matchesTab && matchesSearch;
   });
 
-  // Simulated media player loop if fallback
-  useEffect(() => {
-    let interval: any;
-    if (vlogPlaying) {
-      interval = setInterval(() => {
-        setVideoProgress(prev => {
-          if (prev >= 100) return 0;
-          return prev + 1;
-        });
-      }, 600);
-    }
-    return () => clearInterval(interval);
-  }, [vlogPlaying]);
-
   return (
-    <section id="media-hub" className="relative py-24 md:py-32 bg-white/88 dark:bg-[#060606]/88 border-t border-rose-100 px-6 md:px-12 overflow-hidden">
+    <section id="media-hub" className="relative py-24 md:py-32 bg-white dark:bg-[#060606] border-t border-rose-100 dark:border-white/8 px-6 md:px-12 overflow-hidden">
+      <SectionBackground variant="media" />
       {/* Decorative backdrop elements */}
       <div className="absolute top-[20%] right-[-10%] w-96 h-96 bg-[#FF1E27]/5 blur-[150px] rounded-full pointer-events-none" />
       <div className="absolute bottom-[10%] left-[-10%] w-96 h-96 bg-brand-orange/5 blur-[150px] rounded-full pointer-events-none" />
@@ -71,7 +58,7 @@ export const MediaHub: React.FC<MediaHubProps> = ({ items, onLike }) => {
                 04 / CULTURAL JOURNAL & RADIAL STREAMS
               </span>
             </div>
-            <h2 className="font-serif italic text-4xl sm:text-6xl text-neutral-900 tracking-tight leading-none">
+            <h2 className="font-serif italic text-4xl sm:text-6xl text-neutral-900 dark:text-white tracking-tight leading-none">
               Stories, Lores & <br />
               <span className="text-[#FF1E27] font-display font-black tracking-tighter uppercase not-italic">Broadcast Waves</span>.
             </h2>
@@ -239,7 +226,7 @@ export const MediaHub: React.FC<MediaHubProps> = ({ items, onLike }) => {
                           </>
                         ) : (
                           <>
-                            <div className="flex items-end gap-[1px] h-2.5 w-2 pb-0.5 mr-0.5 group-hover/btn:flex hidden">
+                            <div className="hidden items-end gap-[1px] h-2.5 w-2 pb-0.5 mr-0.5 group-hover/btn:flex">
                               <motion.span animate={{ height: [2, 7, 2] }} transition={{ repeat: Infinity, duration: 0.5 }} className="w-[1.5px] bg-white rounded-full" />
                               <motion.span animate={{ height: [6, 2, 8, 6] }} transition={{ repeat: Infinity, duration: 0.7, delay: 0.1 }} className="w-[1.5px] bg-white rounded-full" />
                               <motion.span animate={{ height: [1, 5, 1] }} transition={{ repeat: Infinity, duration: 0.4, delay: 0.2 }} className="w-[1.5px] bg-white rounded-full" />

@@ -1,43 +1,7 @@
-import React, { useRef, useState } from "react";
-import { motion, useScroll, useTransform, useSpring } from "motion/react";
+import React, { useState } from "react";
+import { motion } from "motion/react";
 import { ArrowUpRight } from "lucide-react";
-import { YouTobiaMarkSVG } from "./YutobiaLogo";
-
-// ─── 3D rotating logo background ────────────────────────────────────────────
-function LogoBg({
-  scrollYProgress,
-}: {
-  scrollYProgress: ReturnType<typeof useScroll>["scrollYProgress"];
-}) {
-  // 3D rotation driven by scroll — rotates around Y axis as you scroll
-  const rotateY = useTransform(scrollYProgress, [0, 1], [-35, 35]);
-  const rotateX = useTransform(scrollYProgress, [0, 0.5, 1], [12, 0, -12]);
-  const scale   = useTransform(scrollYProgress, [0, 0.5, 1], [0.75, 1.05, 0.75]);
-  const opacity = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], [0, 1, 1, 0]);
-
-  const springY = useSpring(rotateY, { stiffness: 40, damping: 18 });
-  const springX = useSpring(rotateX, { stiffness: 40, damping: 18 });
-  const springS = useSpring(scale,   { stiffness: 40, damping: 18 });
-
-  return (
-    <motion.div
-      aria-hidden
-      className="absolute inset-0 flex items-center justify-center pointer-events-none"
-      style={{ perspective: "1000px", opacity }}
-    >
-      <motion.div
-        style={{
-          rotateY: springY,
-          rotateX: springX,
-          scale: springS,
-          transformStyle: "preserve-3d",
-        }}
-      >
-        <YouTobiaMarkSVG size={320} id="ecoBg" />
-      </motion.div>
-    </motion.div>
-  );
-}
+import { SectionBackground } from "./SectionBackground";
 
 // ─── Sub-brand card ──────────────────────────────────────────────────────────
 interface SubBrandProps {
@@ -118,12 +82,6 @@ function SubBrandCard({ num, name, amharic, domain, purpose, values, index, acce
 
 // ─── Main section ────────────────────────────────────────────────────────────
 export const EcosystemSection: React.FC = () => {
-  const sectionRef = useRef<HTMLDivElement>(null);
-
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"],
-  });
 
   const subBrands: SubBrandProps[] = [
     {
@@ -218,13 +176,10 @@ export const EcosystemSection: React.FC = () => {
 
   return (
     <section
-      ref={sectionRef}
       id="ecosystem"
-      className="relative bg-white/88 dark:bg-[#060606]/88 border-t border-neutral-200 dark:border-white/8 overflow-hidden"
+      className="relative bg-white dark:bg-[#060606] border-t border-rose-100 dark:border-white/8 overflow-hidden"
     >
-      {/* ── 3D rotating logo background ─────────────────────────────────── */}
-      <LogoBg scrollYProgress={scrollYProgress} />
-
+      <SectionBackground variant="ecosystem" />
       <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
 
         {/* ── Section 1: The Ecosystem intro ──────────────────────────── */}

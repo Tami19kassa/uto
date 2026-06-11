@@ -12,7 +12,6 @@ import HugeFooter from "./components/HugeFooter";
 import CookieBanner from "./components/CookieBanner";
 import { AdminPanel } from "./components/AdminPanel";
 import ThreeDScrollWrapper from "./components/ThreeDScrollWrapper";
-import ScrollRotatingLogo from "./components/ScrollRotatingLogo";
 import { YouTobiaMarkSVG } from "./components/YutobiaLogo";
 import { fetchMediaItems, addLikeToItem, fetchSocialAccounts, fetchHeroVideoUrl } from "./lib/supabase";
 import { MediaItem, SocialAccount } from "./types";
@@ -172,11 +171,9 @@ export default function App() {
   };
 
   return (
-    <div className="relative min-h-screen text-neutral-900 overflow-x-hidden font-sans" style={{ backgroundColor: "transparent" }}>
+    <div className="relative min-h-screen bg-white dark:bg-[#060606] text-neutral-900 overflow-x-hidden font-sans">
       
-      {/* ── Global fixed 3D sphere — rotates with scroll, sits behind everything ── */}
-      <ScrollRotatingLogo />
-      
+      {/* Splash loader */}
       {/* Huge Agency Splash Curtain Animation Loader */}
       <AnimatePresence>
         {isBooting && (
@@ -337,9 +334,10 @@ export default function App() {
           />
         </ThreeDScrollWrapper>
 
-        {/* SECTION 2: THE YOUTOBIA ECOSYSTEM (full PDF content) */}
-        {/* EcosystemSection manages its own internal 3D logo scroll animation */}
-        <EcosystemSection />
+        {/* SECTION 2: THE YOUTOBIA ECOSYSTEM */}
+        <ThreeDScrollWrapper id="ecosystem">
+          <EcosystemSection />
+        </ThreeDScrollWrapper>
 
         {/* SECTION 3: ENQOQ CASH GAME LOOP STORY */}
         <ThreeDScrollWrapper>
@@ -356,9 +354,10 @@ export default function App() {
           <StudioShowcase onPlayDemo={() => handleNavigate("enqoq-cash")} />
         </ThreeDScrollWrapper>
 
-        {/* SECTION 6: VISION FORWARD — dark full-width */}
-        {/* VisionSection manages its own 3D logo scroll */}
-        <VisionSection />
+        {/* SECTION 6: VISION FORWARD */}
+        <ThreeDScrollWrapper id="vision">
+          <VisionSection />
+        </ThreeDScrollWrapper>
 
         {/* SECTION 7: CULTURAL JOURNAL & VLOGS */}
         <ThreeDScrollWrapper id="media-hub">
