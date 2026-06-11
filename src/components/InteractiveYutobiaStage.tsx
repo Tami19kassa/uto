@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence, useAnimationFrame } from "motion/react";
 import { Maximize2 } from "lucide-react";
+import { YouTobiaMarkSVG } from "./YutobiaLogo";
 
 type ViewportMode = "FREEFORM" | "ISOMETRIC";
 
@@ -374,65 +375,17 @@ export const InteractiveYutobiaStage: React.FC = () => {
           transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
         />
 
-        {/* SVG Logo */}
-        <motion.svg
-          width="180"
-          height="180"
-          viewBox="0 0 120 120"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          style={{ translateZ: "60px", filter: "drop-shadow(0 0 30px rgba(255,30,39,0.7)) drop-shadow(0 8px 24px rgba(255,30,39,0.4))" }}
+        {/* SVG Logo — original YouTobia ribbon-globe mark */}
+        <motion.div
+          style={{
+            translateZ: "60px",
+            filter: "drop-shadow(0 0 28px rgba(255,30,39,0.75)) drop-shadow(0 6px 20px rgba(255,30,39,0.45))",
+          }}
           animate={{ scale: zoomLevel }}
           transition={{ type: "spring", stiffness: 200, damping: 16 }}
         >
-          <defs>
-            <linearGradient id="stageRedCore" x1="10" y1="10" x2="110" y2="110" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stopColor="#FF8086" />
-              <stop offset="45%" stopColor="#FF1E27" />
-              <stop offset="100%" stopColor="#6B0306" />
-            </linearGradient>
-            <linearGradient id="stageRibbon" x1="40" y1="20" x2="80" y2="100" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stopColor="#FFFFFF" />
-              <stop offset="40%" stopColor="#FFD0D2" />
-              <stop offset="100%" stopColor="#FF1E27" />
-            </linearGradient>
-            <filter id="stageGlow">
-              <feDropShadow dx="0" dy="6" stdDeviation="8" floodColor="#FF1E27" floodOpacity="0.6" />
-              <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#FF8086" floodOpacity="0.4" />
-            </filter>
-          </defs>
-
-          {/* Structural guide circles */}
-          <circle cx="60" cy="60" r="52" stroke="rgba(255,30,39,0.18)" strokeWidth="0.8" strokeDasharray="3 5" />
-          <circle cx="60" cy="60" r="42" stroke="rgba(255,30,39,0.10)" strokeWidth="0.6" strokeDasharray="1 4" />
-
-          {/* Globe crest */}
-          <path
-            d="M 60,11 C 30,11 11,32 11,60 C 11,88 28,103 48,107 C 49,90 41,79 34,71 C 26,62 19,53 23,40 C 27,27 39,21 54,23 C 71,25 80,39 82,53 C 84,67 76,80 66,86 C 65,86 52,90 40,84 C 55,94 77,93 89,81 C 102,68 104,45 94,30 C 86,18 73,11 60,11 Z"
-            fill="url(#stageRedCore)"
-            filter="url(#stageGlow)"
-          />
-
-          {/* Ribbon */}
-          <path
-            d="M 42,32 C 40,45 42,55 48,65 C 55,75 66,78 78,74 C 92,70 102,54 96,38 C 94,33 88,40 85,45 C 77,58 64,62 55,54 C 49,49 48,38 46,30 C 45,26 43,26 42,32 Z"
-            fill="url(#stageRibbon)"
-          />
-
-          {/* Core energy node */}
-          <motion.circle
-            cx="60" cy="60" r="5"
-            fill="white"
-            animate={{ r: [4.5, 6.5, 4.5], opacity: [0.8, 1, 0.8] }}
-            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-          />
-
-          {/* Base sweep */}
-          <path
-            d="M 48,107 C 42,108 34,103 28,100 C 24,96 16,78 18,65 C 19,64 21,68 22,72 C 26,88 36,98 48,103 Z"
-            fill="#FF8086"
-          />
-        </motion.svg>
+          <YouTobiaMarkSVG size={170} id="stage" />
+        </motion.div>
 
         {/* 3D face depth plane — subtle surface shine */}
         <div

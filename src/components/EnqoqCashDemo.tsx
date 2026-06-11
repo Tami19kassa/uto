@@ -254,7 +254,7 @@ export const EnqoqCashDemo: React.FC<EnqoqCashDemoProps> = ({ onUpdateScore }) =
   };
 
   return (
-    <section id="enqoq-cash" className="relative py-24 md:py-32 bg-white overflow-hidden border-t border-rose-100">
+    <section id="enqoq-cash" className="relative py-24 md:py-32 bg-white/88 dark:bg-[#060606]/88 overflow-hidden border-t border-rose-100">
       {/* Absolute Graphics */}
       <div className="absolute top-[-5%] left-[-10%] w-96 h-96 bg-brand/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-[-5%] right-[-10%] w-96 h-96 bg-brand-orange/5 blur-[120px] rounded-full pointer-events-none" />

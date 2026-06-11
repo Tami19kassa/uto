@@ -21,10 +21,10 @@ export const HugeHero: React.FC<HeroProps> = ({
   const [currentMottoIndex, setCurrentMottoIndex] = useState(0);
 
   const mottos = [
-    "BRAND ARCHITECTURE & INTERACTIVE DESIGN",
-    "CREATIVE STORYTELLING FOR CULTURAL IDENTITY",
-    "PLAYABLE BRAND EXPERIENCES & GAMIFICATION",
-    "MULTIMEDIA ART DIRECTION FROM ADDIS ABABA"
+    "CREATIVITY · TECHNOLOGY · ENTERTAINMENT · EDUCATION",
+    "FIVE PURPOSE-BUILT BRANDS · ONE BOLD VISION",
+    "STREAMING · PRODUCTION · EDUCATION · INFORMATION · TRIVIA",
+    "A HOLDING COMPANY UNITING THE MULTIMEDIA LANDSCAPE"
   ];
 
   useEffect(() => {
@@ -54,7 +54,7 @@ export const HugeHero: React.FC<HeroProps> = ({
   return (
     <div
       ref={containerRef}
-      className="relative min-h-screen bg-white dark:bg-[#060606] overflow-hidden flex flex-col justify-center pt-28 pb-16 px-6 md:px-12 transition-colors duration-500"
+      className="relative min-h-screen bg-white/90 dark:bg-[#060606]/90 overflow-hidden flex flex-col justify-center pt-28 pb-16 px-6 md:px-12 transition-colors duration-500"
       style={{
         "--x": `${mousePosition.x}%`,
         "--y": `${mousePosition.y}%`,
@@ -238,11 +238,12 @@ export const HugeHero: React.FC<HeroProps> = ({
               className="lg:col-span-7 space-y-6"
             >
               <div className="font-serif italic text-2xl md:text-3.5xl text-neutral-800 dark:text-neutral-200 leading-snug tracking-tight max-w-xl transition-colors duration-500">
-                We design and build digital architecture that demands absolute focus.
-                We merge rich cultural myths with tactile web interactions.
+                A bold vision uniting creativity, technology, entertainment,
+                information, and education — delivered through a powerful
+                ecosystem of purpose-built brands.
               </div>
               <p className="text-neutral-600 dark:text-neutral-400 text-base leading-relaxed font-sans font-light max-w-xl transition-colors duration-500">
-                 Our interactive platform <span className="text-[#FF1E27] font-semibold border-b border-dashed border-[#FF1E27]/40 hover:border-[#FF1E27] cursor-pointer transition-colors" onClick={onPlayDemo}>Enqoq Cash</span> is a premier multi-category trivia ecosystem covering General Knowledge, Sports, Science, and History challenges where your intelligence is rewarded.
+                YouTobia Multimedia P.l.C. is a holding company that unites five specialized sub-brands — <span className="text-[#FF1E27] font-semibold">EnqoqCash</span>, <span className="text-neutral-700 dark:text-neutral-300 font-semibold">QenaView</span>, <span className="text-neutral-700 dark:text-neutral-300 font-semibold">eTop Production</span>, <span className="text-neutral-700 dark:text-neutral-300 font-semibold">YentaBarsiisaa</span>, and <span className="text-neutral-700 dark:text-neutral-300 font-semibold">MirXog</span> — each designed to lead in its domain of the multimedia landscape.
               </p>
  
               {/* Action buttons with Micro-interactions */}

@@ -2,14 +2,18 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import HugeHeader from "./components/HugeHeader";
 import HugeHero from "./components/HugeHero";
+import EcosystemSection from "./components/EcosystemSection";
 import StoryScrollJourney from "./components/StoryScrollJourney";
 import EnqoqCashDemo from "./components/EnqoqCashDemo";
 import StudioShowcase from "./components/StudioShowcase";
+import VisionSection from "./components/VisionSection";
 import MediaHub from "./components/MediaHub";
 import HugeFooter from "./components/HugeFooter";
 import CookieBanner from "./components/CookieBanner";
 import { AdminPanel } from "./components/AdminPanel";
 import ThreeDScrollWrapper from "./components/ThreeDScrollWrapper";
+import ScrollRotatingLogo from "./components/ScrollRotatingLogo";
+import { YouTobiaMarkSVG } from "./components/YutobiaLogo";
 import { fetchMediaItems, addLikeToItem, fetchSocialAccounts, fetchHeroVideoUrl } from "./lib/supabase";
 import { MediaItem, SocialAccount } from "./types";
 
@@ -136,7 +140,7 @@ export default function App() {
   // Sync scroll positions to identify active tabs in desktop header
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ["home", "enqoq-cash", "studio", "media-hub", "connect"];
+      const sections = ["home", "ecosystem", "enqoq-cash", "studio", "vision", "media-hub", "connect"];
       const scrollPos = window.scrollY + 200;
 
       for (const sec of sections) {
@@ -168,7 +172,10 @@ export default function App() {
   };
 
   return (
-    <div className="relative min-h-screen bg-white text-neutral-900 overflow-x-hidden font-sans">
+    <div className="relative min-h-screen text-neutral-900 overflow-x-hidden font-sans" style={{ backgroundColor: "transparent" }}>
+      
+      {/* ── Global fixed 3D sphere — rotates with scroll, sits behind everything ── */}
+      <ScrollRotatingLogo />
       
       {/* Huge Agency Splash Curtain Animation Loader */}
       <AnimatePresence>
@@ -243,38 +250,7 @@ export default function App() {
                     transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
                     className="relative z-10"
                   >
-                    <svg
-                      width="95"
-                      height="95"
-                      viewBox="0 0 120 120"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <defs>
-                        <linearGradient id="splashRedGrad" x1="10" y1="10" x2="110" y2="110" gradientUnits="userSpaceOnUse">
-                          <stop offset="0%" stopColor="#FF5C62" />
-                          <stop offset="50%" stopColor="#FF1E27" />
-                          <stop offset="100%" stopColor="#A30B11" />
-                        </linearGradient>
-                        <linearGradient id="splashRibbonGrad" x1="40" y1="20" x2="80" y2="100" gradientUnits="userSpaceOnUse">
-                          <stop offset="0%" stopColor="#FFFFFF" />
-                          <stop offset="30%" stopColor="#FFA1A5" />
-                          <stop offset="100%" stopColor="#FF1E27" />
-                        </linearGradient>
-                      </defs>
-                      <path
-                        d="M 60,11 C 30,11 11,32 11,60 C 11,88 28,103 48,107 C 49,90 41,79 34,71 C 26,62 19,53 23,40 C 27,27 39,21 54,23 C 71,25 80,39 82,53 C 84,67 76,80 66,86 C 65,86 52,90 40,84 C 55,94 77,93 89,81 C 102,68 104,45 94,30 C 86,18 73,11 60,11 Z"
-                        fill="url(#splashRedGrad)"
-                      />
-                      <path
-                        d="M 42,32 C 40,45 42,55 48,65 C 55,75 66,78 78,74 C 92,70 102,54 96,38 C 94,33 88,40 85,45 C 77,58 64,62 55,54 C 49,49 48,38 46,30 C 45,26 43,26 42,32 Z"
-                        fill="url(#splashRibbonGrad)"
-                      />
-                      <path
-                        d="M 48,107 C 42,108 34,103 28,100 C 24,96 16,78 18,65 C 19,64 21,68 22,72 C 26,88 36,98 48,103 C 49,105 49,106 48,107 Z"
-                        fill="#FF5C62"
-                      />
-                    </svg>
+                    <YouTobiaMarkSVG size={95} id="splash" />
                   </motion.div>
                 </div>
 
@@ -341,7 +317,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      <div className="relative flex flex-col">
+      <div className="relative flex flex-col" style={{ zIndex: 1 }}>
         {/* Core Sticky Header */}
         <HugeHeader
           onNavigate={handleNavigate}
@@ -361,30 +337,38 @@ export default function App() {
           />
         </ThreeDScrollWrapper>
 
-        {/* INTERACTIVE SCROLL STORYTELLING JOURNEY */}
+        {/* SECTION 2: THE YOUTOBIA ECOSYSTEM (full PDF content) */}
+        {/* EcosystemSection manages its own internal 3D logo scroll animation */}
+        <EcosystemSection />
+
+        {/* SECTION 3: ENQOQ CASH GAME LOOP STORY */}
         <ThreeDScrollWrapper>
           <StoryScrollJourney onPlayDemo={() => handleNavigate("enqoq-cash")} />
         </ThreeDScrollWrapper>
 
-        {/* SECTION 2: ENQOQ CASH */}
+        {/* SECTION 4: ENQOQ CASH PLAYABLE DEMO */}
         <ThreeDScrollWrapper id="enqoq-cash">
           <EnqoqCashDemo onUpdateScore={handleUpdateScore} />
         </ThreeDScrollWrapper>
 
-        {/* SECTION 3: THE STUDIO SHOWCASE */}
+        {/* SECTION 5: THE STUDIO / SUB-BRANDS SHOWCASE */}
         <ThreeDScrollWrapper id="studio">
           <StudioShowcase onPlayDemo={() => handleNavigate("enqoq-cash")} />
         </ThreeDScrollWrapper>
 
-        {/* SECTION 3.5: CULTURAL JOURNAL & RADIAL VLOG STREAMS */}
+        {/* SECTION 6: VISION FORWARD — dark full-width */}
+        {/* VisionSection manages its own 3D logo scroll */}
+        <VisionSection />
+
+        {/* SECTION 7: CULTURAL JOURNAL & VLOGS */}
         <ThreeDScrollWrapper id="media-hub">
-          <MediaHub 
-            items={mediaItems} 
-            onLike={handleLikeItem} 
+          <MediaHub
+            items={mediaItems}
+            onLike={handleLikeItem}
           />
         </ThreeDScrollWrapper>
 
-        {/* SECTION 4: CONTACT & DETAILS */}
+        {/* SECTION 8: CONTACT */}
         <ThreeDScrollWrapper id="connect">
           <HugeFooter onNavigate={handleNavigate} socials={socials} />
         </ThreeDScrollWrapper>

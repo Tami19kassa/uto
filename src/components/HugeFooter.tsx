@@ -44,7 +44,7 @@ export const HugeFooter: React.FC<FooterProps> = ({ onNavigate, socials }) => {
     : socialLinks;
 
   return (
-    <footer id="connect" className="relative py-24 md:py-32 bg-white border-t border-rose-100 px-6 md:px-12 overflow-hidden">
+    <footer id="connect" className="relative py-24 md:py-32 bg-white/88 dark:bg-[#060606]/88 border-t border-rose-100 px-6 md:px-12 overflow-hidden">
       <div className="absolute top-1/2 left-0 w-80 h-80 bg-[#FF1E27]/5 blur-[120px] rounded-full pointer-events-none" />
       
       <div className="max-w-7xl mx-auto space-y-20 relative z-10">
@@ -58,8 +58,7 @@ export const HugeFooter: React.FC<FooterProps> = ({ onNavigate, socials }) => {
               <YutobiaLogo size={52} />
               
               <p className="text-neutral-600 text-sm leading-relaxed max-w-sm font-sans font-light">
-                YouTobia Multimedia is architectural digital craft. 
-                We are a creative agency, development firm, and content design production studio based out of Addis Ababa, Ethiopia.
+                YouTobia Multimedia P.l.C. is a holding company that unites five specialized sub-brands — each designed to lead in its domain of the multimedia landscape, from streaming and production to education, information, and interactive trivia.
               </p>
 
               <div className="space-y-3 pt-4 border-t border-neutral-200 font-mono text-xs text-neutral-500">

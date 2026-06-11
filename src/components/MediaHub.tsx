@@ -56,7 +56,7 @@ export const MediaHub: React.FC<MediaHubProps> = ({ items, onLike }) => {
   }, [vlogPlaying]);
 
   return (
-    <section id="media-hub" className="relative py-24 md:py-32 bg-white border-t border-rose-100 px-6 md:px-12 overflow-hidden">
+    <section id="media-hub" className="relative py-24 md:py-32 bg-white/88 dark:bg-[#060606]/88 border-t border-rose-100 px-6 md:px-12 overflow-hidden">
       {/* Decorative backdrop elements */}
       <div className="absolute top-[20%] right-[-10%] w-96 h-96 bg-[#FF1E27]/5 blur-[150px] rounded-full pointer-events-none" />
       <div className="absolute bottom-[10%] left-[-10%] w-96 h-96 bg-brand-orange/5 blur-[150px] rounded-full pointer-events-none" />

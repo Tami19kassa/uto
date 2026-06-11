@@ -12,77 +12,76 @@ export const StudioShowcase: React.FC<StudioShowcaseProps> = ({ onPlayDemo }) =>
   const capabilities = [
     {
       id: 1,
-      tag: "DIGITAL PLATFORMS",
-      title: "ENQOQ CASH SOLUTIONS",
-      desc: "Our high-engagement cultural trivia platform. Tailor-made with custom high-score leaderboards and direct cash backings.",
+      tag: "FLAGSHIP PRODUCT",
+      title: "ENQOQ CASH",
+      desc: "A regulated, multi-platform, knowledge-driven trivia network. Compete across General Knowledge, Sports, Science, and History categories with real-time score multipliers.",
       image: "/src/assets/images/game_interface_1781111602583.png",
       span: "md:col-span-8",
       action: onPlayDemo,
-      btnText: "Launch Mini-Game",
+      btnText: "Play Demo",
     },
     {
       id: 2,
-      tag: "SPACE DESIGN",
-      title: "YOUTOBIA CREATIVE LABS",
-      desc: "Our multimedia hub where copywriters, visual artists, and software developers build the future of advertising.",
+      tag: "SUB-BRAND 01",
+      title: "QENAVIEW",
+      desc: "Multimedia Streaming & Distribution — revolutionizing how people access and experience multimedia content through an accessible, high-definition platform.",
       image: "/src/assets/images/modern_studio_1781111587439.png",
       span: "md:col-span-4",
     },
     {
       id: 3,
-      tag: "CULTURAL IDENTITY",
-      title: "GE'EZ TYPOGRAPHIC SYSTEM",
-      desc: "Modernizing Ge'ez script typography into high-contrast digital media layouts to promote cultural archival across Africa.",
-      image: "https://picsum.photos/seed/geez/800/800",
+      tag: "SUB-BRAND 02",
+      title: "eTop Production",
+      desc: "Multimedia Content Production — a leading production house creating compelling stories and fostering a creative ecosystem where artists push the boundaries of content.",
+      image: "https://images.unsplash.com/photo-1578241561880-0a1d5db3cb8a?w=800&q=75",
       span: "md:col-span-4",
     },
     {
       id: 4,
-      tag: "AUDIOSCAPE",
-      title: "AMHARIC SYNTH COMPILATIONS",
-      desc: "Original rhythm tracking and interactive score notification synthesis designed specifically for competitive digital systems.",
-      image: "https://picsum.photos/seed/sonic/1200/800",
+      tag: "SUB-BRANDS 03 · 04",
+      title: "YENTABARSIISAA & MIRXOG",
+      desc: "Skills & Education Hub empowering multimedia professionals through inclusive training — plus a trusted Information Hub delivering insights, news, and analysis for the multimedia world.",
+      image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&q=75",
       span: "md:col-span-8",
     },
   ];
 
   const featuresList = [
     {
-      title: "Brand Systems & Strategy",
-      desc: "Logo engineering, design guidelines, corporate values direction, and market research.",
+      title: "Innovation",
+      desc: "Pushing boundaries in multimedia technologies and trends across all five sub-brands.",
     },
     {
-      title: "Interactive Web Engineering",
-      desc: "Custom React modules, highly-responsive state triggers, elegant game mechanics, and digital visibility.",
+      title: "Creativity",
+      desc: "Fostering original, high-quality content creation at every level of the ecosystem.",
     },
     {
-      title: "Cultural Content Synthesis",
-      desc: "Blending traditional Amharic narratives, general knowledge trivia, and Ge'ez patterns with global aesthetics.",
+      title: "Collaboration",
+      desc: "Building strong partnerships across the multimedia landscape with diverse talent.",
     },
     {
-      title: "Multimedia Production",
-      desc: "Full-scale cinematic compositions, sonic synthesis, motion graphic streams, and immersive media.",
+      title: "Integrity & Inclusion",
+      desc: "Upholding transparency and trust while promoting a wide range of voices and perspectives.",
     },
   ];
 
   return (
-    <section id="studio" className="relative py-24 md:py-32 bg-[#fafafa] border-t border-rose-100 px-6 md:px-12 overflow-hidden">
+    <section id="studio" className="relative py-24 md:py-32 bg-white/88 dark:bg-[#060606]/88 border-t border-rose-100 px-6 md:px-12 overflow-hidden">
       <div className="max-w-7xl mx-auto space-y-20 relative z-10">
         {/* Typographic Intro */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end border-b border-neutral-200 pb-12">
           <div className="lg:col-span-6 space-y-4">
             <span className="font-mono text-xs tracking-widest text-[#FF1E27] font-semibold">
-              03 / CAPABILITIES & WORK
+              03 / THE YOUTOBIA ECOSYSTEM
             </span>
             <h2 className="font-serif italic text-4xl sm:text-6xl text-neutral-900 tracking-tight leading-none">
-              Our Playground <br />
-              <span className="text-[#FF1E27] font-display font-black tracking-tighter uppercase not-italic">of Creation</span>.
+              Five Brands. <br />
+              <span className="text-[#FF1E27] font-display font-black tracking-tighter uppercase not-italic">One Vision</span>.
             </h2>
           </div>
           <div className="lg:col-span-6">
             <p className="text-neutral-600 text-base md:text-lg font-sans max-w-xl leading-relaxed font-light">
-              At YouTobia Multimedia, we don't just supply services; we build fully-aligned digital landscapes. 
-              Our work merges rich artistic craftsmanship with dynamic, performant frameworks to captivate global audiences.
+              YouTobia Multimedia P.l.C. is a holding company that unites five specialized sub-brands — each designed to lead in its domain: streaming, content production, education, information, and interactive trivia.
             </p>
           </div>
         </div>
@@ -161,7 +160,7 @@ export const StudioShowcase: React.FC<StudioShowcaseProps> = ({ onPlayDemo }) =>
         <div className="pt-16 border-t border-neutral-200 space-y-12">
           <div className="max-w-md">
             <span className="font-mono text-xs tracking-widest text-brand font-semibold">
-              OUR DEVELOPMENT FRAMEWORK
+              OUR CORE VALUES
             </span>
             <h3 className="font-serif italic text-3xl text-neutral-900 tracking-tight pt-1">
               The YouTobia Principles
