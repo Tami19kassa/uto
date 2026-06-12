@@ -12,7 +12,8 @@ import HugeFooter from "./components/HugeFooter";
 import CookieBanner from "./components/CookieBanner";
 import { AdminPanel } from "./components/AdminPanel";
 import ThreeDScrollWrapper from "./components/ThreeDScrollWrapper";
-import ScrollRotatingLogo from "./components/ScrollRotatingLogo";
+import AnimatedBackground from "./components/AnimatedBackground";
+import PageTransition from "./components/PageTransition";
 import { YouTobiaMarkSVG } from "./components/YutobiaLogo";
 import { fetchMediaItems, addLikeToItem, fetchSocialAccounts, fetchHeroVideoUrl } from "./lib/supabase";
 import { MediaItem, SocialAccount } from "./types";
@@ -200,8 +201,10 @@ export default function App() {
   return (
     <div className="relative min-h-screen bg-white dark:bg-[#060606] text-neutral-900 font-sans" style={{ overflowX: "clip" }}>
 
-      {/* ── Global 3D logo background (scroll-driven rotation) ───────── */}
-      <ScrollRotatingLogo />
+      {/* ── Animated 3D background (CSS + GSAP, always visible) ──────── */}
+      <AnimatedBackground />
+      {/* ── Page transition curtain (fires between sections) ─────────── */}
+      <PageTransition />
 
       {/* ── GSAP Splash Curtain ──────────────────────────────────────────── */}
       {isBooting && (

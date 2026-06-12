@@ -259,7 +259,7 @@ export const MediaHub: React.FC<MediaHubProps> = ({ items, onLike }) => {
                     allowFullScreen />
                 ) : (
                   <video autoPlay controls playsInline className="w-full h-full object-contain"
-                    src={selectedVlog?.videoUrl || "https://cdn.pixabay.com/video/2021/04/12/70860-537333552_large.mp4"} />
+                    src={selectedVlog?.videoUrl || ""} />
                 )}
               </div>
             ) : (

@@ -86,7 +86,7 @@ const DEFAULT_SOCIAL_ACCOUNTS = [
   { id: "s4", platform: "Instagram", label: "youtobia.art", url: "https://instagram.com/youtobia.multimedia", isActive: true }
 ];
 
-const DEFAULT_HERO_VIDEO = "https://cdn.pixabay.com/video/2021/04/12/70860-537333552_large.mp4";
+const DEFAULT_HERO_VIDEO = "";
 
 // Interface for database config
 interface DbConfig {

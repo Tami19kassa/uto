@@ -179,3 +179,33 @@
   animation: fade-in 0.5s ease-out both;
 }
 
+
+/* ─── Three.js show-through: section backgrounds become glass ─────────────
+   Every section is semi-transparent so the WebGL scene bleeds through.
+   Light mode: white at 88% opacity.  Dark mode: near-black at 82% opacity.
+   This lets the 3D logo, rings, and particles glow visibly behind all content.
+────────────────────────────────────────────────────────────────────────── */
+.three-glass {
+  background-color: rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+.dark .three-glass {
+  background-color: rgba(6, 6, 6, 0.82) !important;
+}
+
+/* Hero is even more transparent so 3D scene is front-and-center */
+.three-glass-hero {
+  background-color: rgba(255, 255, 255, 0.72) !important;
+  backdrop-filter: blur(0px);
+}
+.dark .three-glass-hero {
+  background-color: rgba(6, 6, 6, 0.68) !important;
+}
+
+/* Vision section (dark bg) */
+.three-glass-dark {
+  background-color: rgba(8, 8, 8, 0.78) !important;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}

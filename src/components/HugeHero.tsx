@@ -72,54 +72,68 @@ export const HugeHero: React.FC<HeroProps> = ({
   // ── Entrance animation ─────────────────────────────────────────────────
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      // Split title chars into spans
-      const titleEl = titleRef.current;
+      const titleEl    = titleRef.current;
       const subtitleEl = subtitleRef.current;
       if (!titleEl || !subtitleEl) return;
 
+      // Split each element into per-character clip wrappers
       const splitChars = (el: HTMLElement) => {
         const text = el.textContent || "";
         el.innerHTML = text
           .split("")
-          .map(c => c === " "
-            ? '<span style="display:inline-block">&nbsp;</span>'
-            : `<span class="char" style="display:inline-block;overflow:hidden"><span style="display:inline-block">${c}</span></span>`)
+          .map(c =>
+            c === " "
+              ? `<span style="display:inline-block;width:0.3em"> </span>`
+              : `<span style="display:inline-block;overflow:hidden;line-height:1;vertical-align:bottom">` +
+                `<span class="hero-char" style="display:inline-block">${c}</span></span>`
+          )
           .join("");
-        return el.querySelectorAll(".char > span");
+        return el.querySelectorAll(".hero-char");
       };
 
       const chars1 = splitChars(titleEl);
       const chars2 = splitChars(subtitleEl);
 
-      const tl = gsap.timeline({ delay: 0.3 });
+      const tl = gsap.timeline({ delay: 0.2 });
 
-      // Badge
+      // Badge slide down from top
       tl.from(badgeRef.current, {
-        y: -20, opacity: 0, duration: 0.5, ease: "power3.out",
+        y: -30, opacity: 0, duration: 0.55, ease: "expo.out",
       }, 0);
 
-      // Motto
+      // Motto fade up
       tl.from(mottoRef.current, {
-        y: 10, opacity: 0, duration: 0.5, ease: "power3.out",
+        y: 14, opacity: 0, duration: 0.5, ease: "expo.out",
       }, 0.1);
 
-      // Line 1 chars
+      // "YOUTOBIA" — chars launch up from below clip edge, staggered
       tl.from(chars1, {
-        y: "110%",
-        rotateZ: -4,
-        duration: 0.7,
-        ease: "yutobia.spring",
-        stagger: 0.035,
-      }, 0.15);
+        y: "105%",
+        rotateZ: -6,
+        skewX: -4,
+        duration: 0.75,
+        ease: "expo.out",
+        stagger: { each: 0.04, from: "start" },
+      }, 0.18);
 
-      // Line 2 chars
+      // "MULTIMEDIA" — same but alternate rotateZ direction, slight delay
       tl.from(chars2, {
-        y: "110%",
-        rotateZ: 3,
-        duration: 0.65,
-        ease: "yutobia.spring",
-        stagger: 0.03,
-      }, 0.35);
+        y: "105%",
+        rotateZ: 5,
+        skewX: 3,
+        duration: 0.72,
+        ease: "expo.out",
+        stagger: { each: 0.035, from: "start" },
+      }, 0.42);
+
+      // After settling, each char gets a subtle hover-float idle
+      tl.to([chars1, chars2], {
+        y: -4,
+        duration: 1.8,
+        ease: "sine.inOut",
+        stagger: { each: 0.06, from: "random", yoyo: true, repeat: -1 },
+      }, ">");
+
     }, containerRef);
 
     return () => ctx.revert();
@@ -149,16 +163,18 @@ export const HugeHero: React.FC<HeroProps> = ({
       className="relative min-h-screen bg-white dark:bg-[#060606] overflow-hidden flex flex-col justify-center pt-28 pb-16 px-6 md:px-12 transition-colors duration-500"
     >
       {/* ── Background video ─────────────────────────────────────────────── */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none">
-        <video
-          key={heroVideoUrl || "default-video"}
-          autoPlay loop muted playsInline
-          className="absolute min-w-full min-h-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 object-cover opacity-[0.06] dark:opacity-[0.14] filter pointer-events-none transition-all duration-[1500ms] hue-rotate-[340deg] contrast-125 saturate-150"
-          src={heroVideoUrl || "https://cdn.pixabay.com/video/2021/04/12/70860-537333552_large.mp4"}
-        />
-        <div className="absolute inset-0 bg-white/20 dark:bg-[#060606]/40" />
-        <div className="absolute inset-0 bg-gradient-to-t from-white via-white/30 to-white/95 dark:from-[#060606] dark:via-transparent dark:to-[#060606]" />
-      </div>
+      {heroVideoUrl && (
+        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none">
+          <video
+            key={heroVideoUrl}
+            autoPlay loop muted playsInline
+            className="absolute min-w-full min-h-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 object-cover opacity-[0.06] dark:opacity-[0.14] filter pointer-events-none hue-rotate-[340deg] contrast-125 saturate-150"
+            src={heroVideoUrl}
+          />
+          <div className="absolute inset-0 bg-white/20 dark:bg-[#060606]/40" />
+          <div className="absolute inset-0 bg-gradient-to-t from-white via-white/30 to-white/95 dark:from-[#060606] dark:via-transparent dark:to-[#060606]" />
+        </div>
+      )}
 
       {/* ── Mouse-follow blob ─────────────────────────────────────────────── */}
       <div
@@ -208,11 +224,11 @@ export const HugeHero: React.FC<HeroProps> = ({
           </div>
 
           {/* Headline */}
-          <div className="space-y-2">
-            <h1 className="font-display font-black text-5xl sm:text-7xl md:text-[8.5rem] lg:text-[10rem] tracking-tighter leading-[0.82] text-neutral-900 dark:text-white select-none transition-colors duration-500 overflow-hidden">
+          <div className="space-y-0">
+            <h1 className="font-display font-black text-5xl sm:text-7xl md:text-[8.5rem] lg:text-[10rem] tracking-tighter leading-[0.9] text-neutral-900 dark:text-white select-none transition-colors duration-500">
               <span ref={titleRef}>YOUTOBIA</span>
             </h1>
-            <h1 className="font-display font-black text-5xl sm:text-7xl md:text-[8.5rem] lg:text-[10rem] tracking-tighter leading-[0.82] text-neutral-900 dark:text-white select-none relative transition-colors duration-500 overflow-hidden">
+            <h1 className="font-display font-black text-5xl sm:text-7xl md:text-[8.5rem] lg:text-[10rem] tracking-tighter leading-[0.9] text-neutral-900 dark:text-white select-none relative transition-colors duration-500">
               <span ref={subtitleRef}>MULTIMEDIA</span>
               <HoverDot />
             </h1>
@@ -287,16 +303,25 @@ function HoverDot() {
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       gsap.from(ref.current, {
-        scale: 0,
-        duration: 0.5,
-        ease: "back.out(2)",
-        delay: 1.0,
+        scale: 0, opacity: 0,
+        duration: 0.6,
+        ease: "back.out(2.5)",
+        delay: 1.1,
+      });
+      // Continuous subtle pulse after entrance
+      gsap.to(ref.current, {
+        scale: 1.15,
+        duration: 0.9,
+        ease: "sine.inOut",
+        yoyo: true,
+        repeat: -1,
+        delay: 1.8,
       });
     });
     return () => ctx.revert();
   }, []);
   return (
-    <span ref={ref} className="inline-block text-brand ml-1">.</span>
+    <span ref={ref} className="inline-block text-brand ml-1 origin-center">.</span>
   );
 }
 

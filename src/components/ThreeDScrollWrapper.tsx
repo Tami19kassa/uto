@@ -8,14 +8,16 @@ interface ThreeDScrollWrapperProps {
 }
 
 /**
- * ThreeDScrollWrapper — GSAP ScrollTrigger section entrance.
+ * ThreeDScrollWrapper — GSAP 3D section entrance.
  *
- * Strategy: the wrapper itself does NOT hide or fade the section during reading.
- * It only fires a ONE-SHOT entrance when the section scrolls into view.
- * Content inside the section handles its own per-element scroll animations.
+ * Each section enters with:
+ *   — rotateX(18deg) → 0  (flips up from the floor)
+ *   — scale(0.92) → 1
+ *   — opacity 0 → 1
+ *   — y(50px) → 0
  *
- * Entrance: section slides up + rotates in from below, settles at rest.
- * That's it — no opacity-to-zero exits so the user can always read content.
+ * All driven by expo.out — snappy and physical.
+ * One-shot (once: true) so sections stay visible once entered.
  */
 export const ThreeDScrollWrapper: React.FC<ThreeDScrollWrapperProps> = ({
   children,
@@ -30,21 +32,19 @@ export const ThreeDScrollWrapper: React.FC<ThreeDScrollWrapperProps> = ({
       const el = innerRef.current;
       if (!el) return;
 
-      // Start invisible, tilted back, slightly scaled
       gsap.set(el, {
-        rotateX: 14,
-        scale: 0.96,
+        rotateX: 18,
+        scale: 0.92,
         opacity: 0,
-        y: 40,
+        y: 50,
         transformOrigin: "center top",
         transformStyle: "preserve-3d",
         willChange: "transform, opacity",
       });
 
-      // Fire once when section enters viewport — snap to final state
       ScrollTrigger.create({
         trigger: containerRef.current,
-        start: "top 88%",   // fires when the section top is 88% down the viewport
+        start: "top 88%",
         once: true,
         onEnter: () => {
           gsap.to(el, {
@@ -52,9 +52,9 @@ export const ThreeDScrollWrapper: React.FC<ThreeDScrollWrapperProps> = ({
             scale: 1,
             opacity: 1,
             y: 0,
-            duration: 1.1,
+            duration: 1.0,
             ease: "expo.out",
-            clearProps: "rotateX,scale,y,willChange",
+            clearProps: "rotateX,scale,y,willChange,transformStyle",
           });
         },
       });
