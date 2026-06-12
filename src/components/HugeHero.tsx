@@ -1,8 +1,6 @@
 import React, { useRef, useLayoutEffect, useState, useEffect } from "react";
 import { gsap } from "../lib/gsap";
-import { Reveal } from "./Reveal";
-import { Play, ArrowDown, ArrowUpRight } from "lucide-react";
-import { InteractiveYutobiaStage } from "./InteractiveYutobiaStage";
+import { Play, ArrowUpRight, ArrowDown } from "lucide-react";
 
 interface HeroProps {
   onPlayDemo: () => void;
@@ -11,368 +9,397 @@ interface HeroProps {
   heroVideoUrl?: string;
 }
 
-export const HugeHero: React.FC<HeroProps> = ({
-  onPlayDemo,
-  onNavigate,
-  gameScore,
-  heroVideoUrl,
-}) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const blobRef      = useRef<HTMLDivElement>(null);
-  const ghostYRef    = useRef<HTMLDivElement>(null);
-  const titleRef     = useRef<HTMLDivElement>(null);
-  const subtitleRef  = useRef<HTMLDivElement>(null);
-  const badgeRef     = useRef<HTMLDivElement>(null);
-  const mottoRef     = useRef<HTMLDivElement>(null);
+export const HugeHero: React.FC<HeroProps> = ({ onPlayDemo, onNavigate, gameScore }) => {
+  const heroRef        = useRef<HTMLDivElement>(null);
+  const lineTopRef     = useRef<HTMLDivElement>(null);
+  const lineBotRef     = useRef<HTMLDivElement>(null);
+  const eyebrowRef     = useRef<HTMLDivElement>(null);
+  const titleLine1Ref  = useRef<HTMLDivElement>(null);
+  const titleLine2Ref  = useRef<HTMLDivElement>(null);
+  const subtagRef      = useRef<HTMLDivElement>(null);
+  const descRef        = useRef<HTMLDivElement>(null);
+  const ctaRef         = useRef<HTMLDivElement>(null);
+  const statsRef       = useRef<HTMLDivElement>(null);
+  const marqueeRef     = useRef<HTMLDivElement>(null);
+  const accentNumRef   = useRef<HTMLDivElement>(null);
+  const vertTextRef    = useRef<HTMLDivElement>(null);
+  const redBarRef      = useRef<HTMLDivElement>(null);
+  const circleRef      = useRef<HTMLDivElement>(null);
+  const mouse          = useRef({ x: 0, y: 0 });
 
-  const [mousePosition, setMousePosition]     = useState({ x: 50, y: 50 });
-  const [currentMottoIndex, setCurrentMottoIndex] = useState(0);
-
+  const [mottoIndex, setMottoIndex] = useState(0);
   const mottos = [
     "CREATIVITY · TECHNOLOGY · ENTERTAINMENT · EDUCATION",
-    "FIVE PURPOSE-BUILT BRANDS · ONE BOLD VISION",
-    "STREAMING · PRODUCTION · EDUCATION · INFORMATION · TRIVIA",
-    "A HOLDING COMPANY UNITING THE MULTIMEDIA LANDSCAPE",
+    "FIVE BRANDS · ONE VISION · ADDIS ABABA",
+    "STREAMING · PRODUCTION · INFORMATION · TRIVIA",
   ];
 
-  // ── Mouse tracking for parallax blob ──────────────────────────────────
+  // ── Mouse parallax ─────────────────────────────────────────────────────
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      setMousePosition({
-        x: ((e.clientX - rect.left) / rect.width) * 100,
-        y: ((e.clientY - rect.top)  / rect.height) * 100,
-      });
+    const onMove = (e: MouseEvent) => {
+      mouse.current.x = (e.clientX / window.innerWidth  - 0.5) * 2;
+      mouse.current.y = (e.clientY / window.innerHeight - 0.5) * 2;
+      if (accentNumRef.current) {
+        gsap.to(accentNumRef.current, {
+          x: mouse.current.x * 18,
+          y: mouse.current.y * 12,
+          duration: 1.8, ease: "power2.out",
+        });
+      }
+      if (circleRef.current) {
+        gsap.to(circleRef.current, {
+          x: mouse.current.x * -28,
+          y: mouse.current.y * -20,
+          duration: 2.2, ease: "power2.out",
+        });
+      }
     };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
-
-  // ── GSAP parallax: blob + ghost Y follow mouse ─────────────────────────
-  useEffect(() => {
-    if (blobRef.current) {
-      gsap.to(blobRef.current, {
-        x: (mousePosition.x - 50) * 2.2,
-        y: (mousePosition.y - 50) * 2.2,
-        duration: 1.2,
-        ease: "power2.out",
-      });
-    }
-    if (ghostYRef.current) {
-      gsap.to(ghostYRef.current, {
-        x: (mousePosition.x - 50) * 0.3,
-        y: (mousePosition.y - 50) * 0.3,
-        duration: 1.8,
-        ease: "power2.out",
-      });
-    }
-  }, [mousePosition]);
-
-  // ── Entrance animation ─────────────────────────────────────────────────
-  useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      const titleEl    = titleRef.current;
-      const subtitleEl = subtitleRef.current;
-      if (!titleEl || !subtitleEl) return;
-
-      // Split each element into per-character clip wrappers
-      const splitChars = (el: HTMLElement) => {
-        const text = el.textContent || "";
-        el.innerHTML = text
-          .split("")
-          .map(c =>
-            c === " "
-              ? `<span style="display:inline-block;width:0.3em"> </span>`
-              : `<span style="display:inline-block;overflow:hidden;line-height:1;vertical-align:bottom">` +
-                `<span class="hero-char" style="display:inline-block">${c}</span></span>`
-          )
-          .join("");
-        return el.querySelectorAll(".hero-char");
-      };
-
-      const chars1 = splitChars(titleEl);
-      const chars2 = splitChars(subtitleEl);
-
-      const tl = gsap.timeline({ delay: 0.2 });
-
-      // Badge slide down from top
-      tl.from(badgeRef.current, {
-        y: -30, opacity: 0, duration: 0.55, ease: "expo.out",
-      }, 0);
-
-      // Motto fade up
-      tl.from(mottoRef.current, {
-        y: 14, opacity: 0, duration: 0.5, ease: "expo.out",
-      }, 0.1);
-
-      // "YOUTOBIA" — chars launch up from below clip edge, staggered
-      tl.from(chars1, {
-        y: "105%",
-        rotateZ: -6,
-        skewX: -4,
-        duration: 0.75,
-        ease: "expo.out",
-        stagger: { each: 0.04, from: "start" },
-      }, 0.18);
-
-      // "MULTIMEDIA" — same but alternate rotateZ direction, slight delay
-      tl.from(chars2, {
-        y: "105%",
-        rotateZ: 5,
-        skewX: 3,
-        duration: 0.72,
-        ease: "expo.out",
-        stagger: { each: 0.035, from: "start" },
-      }, 0.42);
-
-      // After settling, each char gets a subtle hover-float idle
-      tl.to([chars1, chars2], {
-        y: -4,
-        duration: 1.8,
-        ease: "sine.inOut",
-        stagger: { each: 0.06, from: "random", yoyo: true, repeat: -1 },
-      }, ">");
-
-    }, containerRef);
-
-    return () => ctx.revert();
+    window.addEventListener("mousemove", onMove, { passive: true });
+    return () => window.removeEventListener("mousemove", onMove);
   }, []);
 
   // ── Motto cycling ──────────────────────────────────────────────────────
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentMottoIndex(prev => (prev + 1) % mottos.length);
-    }, 3800);
-    return () => clearInterval(timer);
+    const t = setInterval(() => setMottoIndex(p => (p + 1) % mottos.length), 3600);
+    return () => clearInterval(t);
   }, []);
 
-  // Animate motto swap
   useEffect(() => {
-    if (mottoRef.current) {
-      gsap.fromTo(mottoRef.current,
-        { opacity: 0, y: 8, filter: "blur(3px)" },
-        { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.35, ease: "power2.out" }
-      );
-    }
-  }, [currentMottoIndex]);
+    if (!marqueeRef.current) return;
+    gsap.fromTo(marqueeRef.current,
+      { opacity: 0, y: 6 },
+      { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }
+    );
+  }, [mottoIndex]);
+
+  // ── Marquee scroll ─────────────────────────────────────────────────────
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      const track = marqueeRef.current?.querySelector(".marquee-track") as HTMLElement;
+      if (track) {
+        const w = track.scrollWidth / 2;
+        gsap.to(track, { x: -w, duration: 22, ease: "none", repeat: -1 });
+      }
+    });
+    return () => ctx.revert();
+  }, [mottoIndex]);
+
+  // ── Entrance timeline ──────────────────────────────────────────────────
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      // Split title chars
+      const splitChars = (el: HTMLElement | null): Element[] => {
+        if (!el) return [];
+        const text = el.textContent || "";
+        el.innerHTML = text.split("").map(c =>
+          c === " "
+            ? `<span style="display:inline-block;width:0.25em"> </span>`
+            : `<span style="display:inline-block;overflow:hidden;line-height:1;vertical-align:bottom">` +
+              `<span class="ch" style="display:inline-block">${c}</span></span>`
+        ).join("");
+        return Array.from(el.querySelectorAll(".ch"));
+      };
+
+      const c1 = splitChars(titleLine1Ref.current);
+      const c2 = splitChars(titleLine2Ref.current);
+
+      const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
+
+      // Red bar slides in
+      tl.from(redBarRef.current,   { scaleX: 0, transformOrigin: "left", duration: 0.6 }, 0);
+      // Top rule line
+      tl.from(lineTopRef.current,  { scaleX: 0, transformOrigin: "left", duration: 0.55 }, 0.05);
+      // Eyebrow
+      tl.from(eyebrowRef.current,  { x: -40, opacity: 0, duration: 0.5 }, 0.15);
+      // Giant accent number
+      tl.from(accentNumRef.current,{ y: 60, opacity: 0, duration: 0.9, ease: "power4.out" }, 0.1);
+      // Vertical side text
+      tl.from(vertTextRef.current, { opacity: 0, y: 20, duration: 0.5 }, 0.3);
+      // Decorative circle
+      tl.from(circleRef.current,   { scale: 0, opacity: 0, duration: 0.8, ease: "back.out(1.4)" }, 0.2);
+
+      // Line 1 chars
+      tl.from(c1, {
+        y: "110%", rotateZ: -8, skewX: -5,
+        duration: 0.7, stagger: { each: 0.038, from: "start" },
+      }, 0.22);
+      // Line 2 chars
+      tl.from(c2, {
+        y: "110%", rotateZ: 6, skewX: 4,
+        duration: 0.68, stagger: { each: 0.034, from: "start" },
+      }, 0.44);
+
+      // Subtag
+      tl.from(subtagRef.current,   { y: 20, opacity: 0, duration: 0.45 }, 0.7);
+      // Bottom line
+      tl.from(lineBotRef.current,  { scaleX: 0, transformOrigin: "left", duration: 0.6 }, 0.75);
+      // Description block
+      tl.from(descRef.current,     { y: 30, opacity: 0, duration: 0.55 }, 0.82);
+      // CTA buttons
+      tl.from(ctaRef.current?.children ?? [], {
+        y: 24, opacity: 0, duration: 0.5, stagger: 0.1,
+      }, 0.9);
+      // Stats strip
+      tl.from(statsRef.current,    { y: 16, opacity: 0, duration: 0.4 }, 1.0);
+
+      // After settle — chars float idle
+      tl.to([c1, c2], {
+        y: -4, duration: 2.0, ease: "sine.inOut",
+        stagger: { each: 0.05, from: "random", yoyo: true, repeat: -1 },
+      }, ">");
+    }, heroRef);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
-    <div
-      ref={containerRef}
-      className="relative min-h-screen bg-white dark:bg-[#060606] overflow-hidden flex flex-col justify-center pt-28 pb-16 px-6 md:px-12 transition-colors duration-500"
+    <section
+      ref={heroRef}
+      className="relative min-h-screen bg-[#0a0a0a] overflow-hidden flex flex-col"
     >
-      {/* ── Background video ─────────────────────────────────────────────── */}
-      {heroVideoUrl && (
-        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none">
-          <video
-            key={heroVideoUrl}
-            autoPlay loop muted playsInline
-            className="absolute min-w-full min-h-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 object-cover opacity-[0.06] dark:opacity-[0.14] filter pointer-events-none hue-rotate-[340deg] contrast-125 saturate-150"
-            src={heroVideoUrl}
-          />
-          <div className="absolute inset-0 bg-white/20 dark:bg-[#060606]/40" />
-          <div className="absolute inset-0 bg-gradient-to-t from-white via-white/30 to-white/95 dark:from-[#060606] dark:via-transparent dark:to-[#060606]" />
-        </div>
-      )}
-
-      {/* ── Mouse-follow blob ─────────────────────────────────────────────── */}
+      {/* ── Noise texture overlay ─────────────────────────────────────────── */}
       <div
-        ref={blobRef}
-        className="absolute w-[500px] h-[500px] rounded-full pointer-events-none z-[1]"
+        className="absolute inset-0 pointer-events-none opacity-[0.03]"
         style={{
-          top: "10%", left: "15%",
-          background: `radial-gradient(1000px circle,rgba(255,30,39,0.04) 0%,transparent 100%)`,
-          filter: "blur(40px)",
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+          backgroundSize: "200px 200px",
         }}
       />
 
-      {/* ── Grid ──────────────────────────────────────────────────────────── */}
-      <div className="absolute inset-0 huge-grid-pattern opacity-40 pointer-events-none z-[1]" />
-
-      {/* ── Ghost Y ───────────────────────────────────────────────────────── */}
+      {/* ── Left red accent bar ───────────────────────────────────────────── */}
       <div
-        ref={ghostYRef}
-        className="absolute left-[3%] bottom-[5%] text-[#FF1E27]/[0.015] dark:text-[#FF1E27]/[0.025] font-display font-black text-[12rem] md:text-[24rem] leading-none select-none pointer-events-none z-[1]"
+        ref={redBarRef}
+        className="absolute left-0 top-0 bottom-0 w-1 bg-brand"
+        style={{ zIndex: 2 }}
+      />
+
+      {/* ── Giant background accent number ───────────────────────────────── */}
+      <div
+        ref={accentNumRef}
+        className="absolute right-[-2%] top-1/2 -translate-y-1/2 font-display font-black select-none pointer-events-none"
+        style={{
+          fontSize: "clamp(18rem, 30vw, 42rem)",
+          lineHeight: 0.85,
+          color: "rgba(255,30,39,0.04)",
+          zIndex: 1,
+          letterSpacing: "-0.06em",
+        }}
       >
-        Y
+        01
       </div>
 
-      {/* ── Decorative orbiting elements ─────────────────────────────────── */}
-      <OrbitDeco mouseX={mousePosition.x} mouseY={mousePosition.y} />
+      {/* ── Decorative ring ───────────────────────────────────────────────── */}
+      <div
+        ref={circleRef}
+        className="absolute pointer-events-none"
+        style={{
+          width: 480, height: 480,
+          border: "1px solid rgba(255,30,39,0.10)",
+          borderRadius: "50%",
+          right: "8%", top: "12%",
+          zIndex: 1,
+        }}
+      >
+        {/* Inner ring */}
+        <div
+          className="absolute inset-8 rounded-full"
+          style={{ border: "1px solid rgba(255,30,39,0.07)" }}
+        />
+        {/* Dot on ring */}
+        <div
+          className="absolute w-2.5 h-2.5 rounded-full bg-brand"
+          style={{ top: -5, left: "50%", marginLeft: -5 }}
+        />
+      </div>
+
+      {/* ── Vertical side text ────────────────────────────────────────────── */}
+      <div
+        ref={vertTextRef}
+        className="absolute left-8 top-1/2 -translate-y-1/2 pointer-events-none hidden xl:block"
+        style={{
+          writingMode: "vertical-rl",
+          textOrientation: "mixed",
+          transform: "translateY(-50%) rotate(180deg)",
+          zIndex: 2,
+        }}
+      >
+        <span className="font-mono text-[10px] tracking-[0.35em] text-white/20 uppercase">
+          ADDIS ABABA · ETHIOPIA · 2026
+        </span>
+      </div>
+
+      {/* ── Top rule ──────────────────────────────────────────────────────── */}
+      <div
+        ref={lineTopRef}
+        className="absolute top-[72px] left-6 right-6 h-px bg-white/8"
+        style={{ zIndex: 2 }}
+      />
 
       {/* ── Main content ──────────────────────────────────────────────────── */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col justify-between flex-1 py-4 md:py-8">
-        <div className="space-y-6 md:space-y-8">
+      <div className="relative flex flex-col flex-1 max-w-[1400px] mx-auto w-full px-8 md:px-16 lg:px-20" style={{ zIndex: 3 }}>
 
-          {/* Badge + motto row */}
-          <div className="flex flex-col md:flex-row md:items-center gap-4">
-            <div ref={badgeRef}
-              className="inline-flex items-center gap-2 bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/80 dark:border-white/10 px-4 py-2 rounded-full font-mono text-xs tracking-widest text-[#FF1E27] font-semibold shadow-xs shrink-0 self-start transition-colors duration-500">
-              <span className="w-2.5 h-2.5 rounded-full bg-brand animate-pulse" />
-              <span>YOUTOBIA MULTIMEDIA P.L.C.</span>
-            </div>
+        {/* Eyebrow */}
+        <div
+          ref={eyebrowRef}
+          className="flex items-center gap-4 mt-28 mb-10"
+        >
+          <div className="flex items-center gap-2.5 bg-brand/10 border border-brand/20 px-4 py-2 rounded-full">
+            <span className="w-2 h-2 rounded-full bg-brand animate-pulse" />
+            <span className="font-mono text-[11px] tracking-[0.3em] text-brand font-semibold uppercase">
+              YouTobia Multimedia P.L.C.
+            </span>
+          </div>
+          <div className="h-px flex-1 bg-white/8 hidden md:block" />
+          <span className="font-mono text-[10px] tracking-widest text-white/30 hidden md:block">EST. 2024 · ADDIS ABABA</span>
+        </div>
 
-            <div className="h-6 overflow-hidden relative min-w-[320px] self-start md:self-center">
-              <span
-                ref={mottoRef}
-                className="absolute left-0 top-0 text-[10px] font-mono tracking-widest text-neutral-500 dark:text-neutral-400 font-bold uppercase py-0.5"
-              >
-                // {mottos[currentMottoIndex]}
+        {/* Main headline */}
+        <div className="flex-1 flex flex-col justify-center">
+          <div className="space-y-0 mb-8">
+            {/* Line 1 */}
+            <h1 className="font-display font-black tracking-[-0.04em] leading-[0.88] text-white select-none"
+              style={{ fontSize: "clamp(4rem, 11vw, 13rem)" }}>
+              <span ref={titleLine1Ref}>YOUTOBIA</span>
+            </h1>
+
+            {/* Line 2 — with red accent on last letters */}
+            <h1 className="font-display font-black tracking-[-0.04em] leading-[0.88] select-none"
+              style={{ fontSize: "clamp(4rem, 11vw, 13rem)" }}>
+              <span ref={titleLine2Ref} className="text-white">MULTIMEDIA</span>
+              <span className="text-brand ml-2" style={{ fontSize: "0.6em", verticalAlign: "super", lineHeight: 1 }}>™</span>
+            </h1>
+
+            {/* Subtag line */}
+            <div ref={subtagRef} className="flex items-center gap-4 mt-4">
+              <div className="h-px w-12 bg-brand" />
+              <span className="font-mono text-[11px] tracking-[0.4em] text-white/40 uppercase">
+                The Multimedia Standard
               </span>
             </div>
           </div>
 
-          {/* Headline */}
-          <div className="space-y-0">
-            <h1 className="font-display font-black text-5xl sm:text-7xl md:text-[8.5rem] lg:text-[10rem] tracking-tighter leading-[0.9] text-neutral-900 dark:text-white select-none transition-colors duration-500">
-              <span ref={titleRef}>YOUTOBIA</span>
-            </h1>
-            <h1 className="font-display font-black text-5xl sm:text-7xl md:text-[8.5rem] lg:text-[10rem] tracking-tighter leading-[0.9] text-neutral-900 dark:text-white select-none relative transition-colors duration-500">
-              <span ref={subtitleRef}>MULTIMEDIA</span>
-              <HoverDot />
-            </h1>
-          </div>
+          {/* Bottom rule */}
+          <div ref={lineBotRef} className="w-full h-px bg-white/8 mb-10" />
 
-          {/* Description + CTA */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-4">
-            <Reveal effect="fade-up-right" delay={0.4} duration={0.7} easing="ease-out-cubic"
-              once={false} className="lg:col-span-7 space-y-6">
-              <div className="font-serif italic text-2xl md:text-4xl text-neutral-800 dark:text-neutral-200 leading-snug tracking-tight max-w-xl transition-colors duration-500">
-                A bold vision uniting creativity, technology, entertainment,
-                information, and education — delivered through a powerful
-                ecosystem of purpose-built brands.
-              </div>
-              <p className="text-neutral-600 dark:text-neutral-400 text-base leading-relaxed font-sans font-light max-w-xl transition-colors duration-500">
-                YouTobia Multimedia P.l.C. is a holding company that unites five specialized sub-brands —{" "}
-                <span className="text-[#FF1E27] font-semibold">EnqoqCash</span>,{" "}
-                <span className="text-neutral-700 dark:text-neutral-300 font-semibold">QenaView</span>,{" "}
-                <span className="text-neutral-700 dark:text-neutral-300 font-semibold">eTop Production</span>,{" "}
-                <span className="text-neutral-700 dark:text-neutral-300 font-semibold">YentaBarsiisaa</span>, and{" "}
-                <span className="text-neutral-700 dark:text-neutral-300 font-semibold">MirXog</span> — each designed to lead in its domain of the multimedia landscape.
+          {/* Description + CTA grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-12">
+
+            {/* Description */}
+            <div ref={descRef} className="space-y-6">
+              <p className="font-serif italic text-xl md:text-2xl text-white/70 leading-relaxed max-w-lg">
+                Five purpose-built brands united under one bold vision —
+                bringing creativity, technology, and entertainment to
+                the multimedia landscape.
               </p>
-              <div className="flex flex-wrap items-center gap-4">
-                <button onClick={onPlayDemo}
-                  className="flex items-center gap-2 bg-[#FF1E27] hover:bg-brand-dark text-white font-display font-semibold select-none px-6 py-4 rounded-xl transition-all duration-300 scale-100 hover:scale-[1.03] active:scale-95 shadow-lg shadow-brand/20 cursor-pointer group">
-                  <Play className="w-5 h-5 fill-white" />
-                  <span>PLAY ENQOQ CASH DEMO</span>
+
+              {/* Sub-brand pills */}
+              <div className="flex flex-wrap gap-2">
+                {["EnqoqCash", "QenaView", "eTop", "YentaBarsiisaa", "MirXog"].map((brand, i) => (
+                  <span key={brand}
+                    className={`font-mono text-[10px] tracking-widest px-3 py-1.5 rounded-full border transition-colors ${
+                      i === 0
+                        ? "bg-brand/15 border-brand/30 text-brand"
+                        : "border-white/10 text-white/40 hover:border-white/25 hover:text-white/60"
+                    }`}>
+                    {brand}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* CTA + stats */}
+            <div className="space-y-6">
+              <div ref={ctaRef} className="flex flex-wrap gap-4">
+                {/* Primary CTA */}
+                <button
+                  onClick={onPlayDemo}
+                  className="group relative flex items-center gap-3 bg-brand text-white font-display font-bold px-7 py-4 overflow-hidden cursor-pointer"
+                  style={{ clipPath: "polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))" }}
+                  onMouseEnter={e => gsap.to(e.currentTarget, { scale: 1.04, duration: 0.2 })}
+                  onMouseLeave={e => gsap.to(e.currentTarget, { scale: 1.0, duration: 0.3, ease: "elastic.out(1,0.5)" })}
+                >
+                  <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-300" />
+                  <Play className="w-4 h-4 fill-white relative z-10" />
+                  <span className="relative z-10 text-sm tracking-wider">PLAY ENQOQ CASH</span>
                 </button>
-                <button onClick={() => onNavigate("studio")}
-                  className="flex items-center gap-2 bg-neutral-100 hover:bg-neutral-200 dark:bg-white/5 dark:hover:bg-white/10 border border-neutral-200 dark:border-white/10 text-neutral-800 dark:text-neutral-200 font-mono text-xs tracking-widest px-6 py-4 rounded-xl transition-all duration-300 cursor-pointer">
-                  <span>EXPLORE THE ECOSYSTEM</span>
-                  <ArrowUpRight className="w-4 h-4 text-neutral-500 dark:text-neutral-400" />
+
+                {/* Secondary CTA */}
+                <button
+                  onClick={() => onNavigate("ecosystem")}
+                  className="flex items-center gap-2 border border-white/15 text-white/70 hover:text-white hover:border-white/30 font-mono text-xs tracking-widest px-6 py-4 transition-all duration-300 cursor-pointer"
+                  onMouseEnter={e => gsap.to(e.currentTarget, { x: 4, duration: 0.2 })}
+                  onMouseLeave={e => gsap.to(e.currentTarget, { x: 0, duration: 0.4, ease: "elastic.out(1,0.5)" })}
+                >
+                  <span>EXPLORE</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
                 </button>
               </div>
-            </Reveal>
 
-            <Reveal effect="zoom-in-up" delay={0.5} duration={0.7} easing="ease-out-cubic"
-              once={false} className="lg:col-span-5 flex flex-col justify-center select-none">
-              <InteractiveYutobiaStage />
-            </Reveal>
+              {/* Stats row */}
+              <div ref={statsRef} className="flex gap-8 pt-4 border-t border-white/8">
+                {[
+                  { value: "5", label: "Sub-Brands" },
+                  { value: "3+", label: "Products Live" },
+                  { value: "ETH", label: "Based In" },
+                ].map(stat => (
+                  <div key={stat.label} className="space-y-1">
+                    <div className="font-display font-black text-2xl text-white">{stat.value}</div>
+                    <div className="font-mono text-[10px] tracking-widest text-white/35 uppercase">{stat.label}</div>
+                  </div>
+                ))}
+                {gameScore > 0 && (
+                  <div className="space-y-1 ml-auto">
+                    <div className="font-display font-black text-2xl text-brand">{gameScore}</div>
+                    <div className="font-mono text-[10px] tracking-widest text-brand/60 uppercase">Your Score</div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Footer bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-neutral-200 dark:border-white/10 pt-8 mt-12 font-mono text-[11px] text-neutral-400 dark:text-neutral-500 transition-colors duration-500">
+        {/* ── Bottom status bar ────────────────────────────────────────────── */}
+        <div className="flex items-center justify-between pb-8 font-mono text-[10px] tracking-widest text-white/25">
           <div className="flex items-center gap-3">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#FF1E27]"></span>
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-60" />
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-brand" />
             </span>
-            <span className="tracking-widest uppercase">ADDIS ABABA STUDIO // ACTIVE ACCREDITATIONS</span>
-            {gameScore > 0 && (
-              <span className="bg-rose-50 border border-brand/20 dark:bg-[#FF1E27]/10 dark:border-[#FF1E27]/20 text-brand px-2.5 py-1 rounded-full text-[10px] font-bold">
-                Your Demo Score: {gameScore} ETH / Coins
-              </span>
-            )}
+            <span className="uppercase">LIVE · STUDIO ACTIVE</span>
           </div>
-          <button onClick={() => onNavigate("enqoq-cash")}
-            className="flex items-center gap-2 hover:text-[#FF1E27] cursor-pointer group transition-colors font-semibold tracking-wide text-neutral-600 dark:text-neutral-400">
-            <span>EXPLORE STUDIO HIGHLIGHTS</span>
-            <ArrowDown className="w-3.5 h-3.5 animate-bounce group-hover:translate-y-0.5 transition-transform text-[#FF1E27]" />
+
+          <button
+            onClick={() => onNavigate("ecosystem")}
+            className="flex items-center gap-2 hover:text-white/50 cursor-pointer transition-colors group uppercase"
+          >
+            <span>Scroll to explore</span>
+            <ArrowDown className="w-3 h-3 animate-bounce text-brand" />
           </button>
         </div>
       </div>
-    </div>
+
+      {/* ── Marquee ticker ────────────────────────────────────────────────── */}
+      <div className="absolute bottom-0 left-0 right-0 border-t border-white/6 bg-black/40 overflow-hidden py-2.5" style={{ zIndex: 4 }}>
+        <div className="overflow-hidden">
+          <div ref={marqueeRef} className="whitespace-nowrap">
+            <div className="marquee-track inline-flex gap-12">
+              {/* Duplicated for seamless loop */}
+              {[...Array(2)].map((_, di) => (
+                <React.Fragment key={di}>
+                  {mottos.map((m, mi) => (
+                    <span key={mi} className="inline-flex items-center gap-4 font-mono text-[10px] tracking-[0.3em] text-white/25 uppercase">
+                      <span className="text-brand/50">◆</span>
+                      {m}
+                    </span>
+                  ))}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 };
-
-// ── Small animated highlight dot after MULTIMEDIA ──────────────────────────
-function HoverDot() {
-  const ref = useRef<HTMLSpanElement>(null);
-  useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from(ref.current, {
-        scale: 0, opacity: 0,
-        duration: 0.6,
-        ease: "back.out(2.5)",
-        delay: 1.1,
-      });
-      // Continuous subtle pulse after entrance
-      gsap.to(ref.current, {
-        scale: 1.15,
-        duration: 0.9,
-        ease: "sine.inOut",
-        yoyo: true,
-        repeat: -1,
-        delay: 1.8,
-      });
-    });
-    return () => ctx.revert();
-  }, []);
-  return (
-    <span ref={ref} className="inline-block text-brand ml-1 origin-center">.</span>
-  );
-}
-
-// ── Rotating + parallax decorative elements ────────────────────────────────
-function OrbitDeco({ mouseX, mouseY }: { mouseX: number; mouseY: number }) {
-  const circleRef = useRef<HTMLDivElement>(null);
-  const squareRef = useRef<HTMLDivElement>(null);
-  const circleAngle = useRef(0);
-  const squareAngle = useRef(0);
-
-  useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.to({}, {
-        duration: 99999,
-        onUpdate: () => {
-          circleAngle.current += 0.3;
-          squareAngle.current -= 0.2;
-          if (circleRef.current) gsap.set(circleRef.current, { rotate: circleAngle.current });
-          if (squareRef.current) gsap.set(squareRef.current, { rotate: squareAngle.current });
-        },
-        repeat: -1,
-      });
-    });
-    return () => ctx.revert();
-  }, []);
-
-  useEffect(() => {
-    if (circleRef.current) {
-      gsap.to(circleRef.current, {
-        x: (mouseX - 50) * 0.5,
-        y: (mouseY - 50) * -0.5,
-        duration: 1.5, ease: "power2.out",
-      });
-    }
-    if (squareRef.current) {
-      gsap.to(squareRef.current, {
-        x: (mouseX - 50) * -0.4,
-        y: (mouseY - 50) * 0.4,
-        duration: 1.8, ease: "power2.out",
-      });
-    }
-  }, [mouseX, mouseY]);
-
-  return (
-    <>
-      <div ref={circleRef}
-        className="absolute right-[22%] bottom-[28%] w-16 h-16 border border-dashed border-[#FF1E27]/20 dark:border-[#FF1E27]/10 rounded-full pointer-events-none z-[1] hidden sm:block" />
-      <div ref={squareRef}
-        className="absolute left-[18%] top-[20%] w-8 h-8 bg-[#FF1E27]/[0.02] dark:bg-[#FF1E27]/5 border border-[#FF1E27]/20 dark:border-white/10 pointer-events-none z-[1] hidden sm:block" />
-    </>
-  );
-}
 
 export default HugeHero;

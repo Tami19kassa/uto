@@ -1,6 +1,6 @@
 import React, { useRef, useLayoutEffect } from "react";
 import { gsap, ScrollTrigger } from "../lib/gsap";
-import { revealWords, clipReveal, scaleBurst, scrubDrift, drawLine } from "../lib/scrollAnimations";
+import { revealWords, scaleBurst, scrubDrift, drawLine } from "../lib/scrollAnimations";
 import { SectionBackground } from "./SectionBackground";
 
 // ─── GSAP scroll-3D reveal wrapper (used only inside SubBrandSection) ─────────
@@ -22,65 +22,99 @@ function Scroll3D({
     const outer = outerRef.current;
     if (!inner || !outer) return;
 
-    // Initial state
-    const initRotX = rotateDirection === "up" || rotateDirection === "barrel" ? 55 : 0;
-    const initRotY = rotateDirection === "left" ? -55
-      : rotateDirection === "right" ? 55
-      : rotateDirection === "barrel" ? -65 : 0;
-    const initRotZ = rotateDirection === "barrel" ? -25 : 0;
+    const ctx = gsap.context(() => {
+      // Configuration mappings converting the old rotational coordinates to layout-clean cinematic vector masks
+      const directionMap = {
+        left: {
+          initClip: "inset(0% 100% 0% 0%)",
+          exitClip: "inset(0% 0% 0% 100%)",
+          initX: -80,
+          initY: 0,
+          exitX: 80,
+          exitY: 0,
+          initScale: 0.95,
+        },
+        right: {
+          initClip: "inset(0% 0% 0% 100%)",
+          exitClip: "inset(0% 100% 0% 0%)",
+          initX: 80,
+          initY: 0,
+          exitX: -80,
+          exitY: 0,
+          initScale: 0.95,
+        },
+        up: {
+          initClip: "inset(100% 0% 0% 0%)",
+          exitClip: "inset(0% 0% 100% 0%)",
+          initX: 0,
+          initY: 60,
+          exitX: 0,
+          exitY: -60,
+          initScale: 0.96,
+        },
+        barrel: {
+          initClip: "inset(15% 15% 15% 15% rounded 24px)",
+          exitClip: "inset(15% 15% 15% 15% rounded 24px)",
+          initX: 0,
+          initY: 0,
+          exitX: 0,
+          exitY: 0,
+          initScale: 0.9,
+        },
+      };
 
-    gsap.set(inner, {
-      rotateX: initRotX,
-      rotateY: initRotY,
-      rotateZ: initRotZ,
-      scale: 0.82,
-      opacity: 0,
-      transformStyle: "preserve-3d",
-      willChange: "transform, opacity",
-    });
+      const cfg = directionMap[rotateDirection] || directionMap.up;
 
-    ScrollTrigger.create({
-      trigger: outer,
-      start: "top 88%",
-      end: "bottom 12%",
-      scrub: 1.0,
-      onUpdate: (self) => {
-        const p = self.progress;
-        let rotX: number, rotY: number, rotZ: number, sc: number, op: number;
+      // Base states
+      gsap.set(inner, {
+        clipPath: cfg.initClip,
+        x: cfg.initX,
+        y: cfg.initY,
+        scale: cfg.initScale,
+        opacity: 0,
+        filter: "blur(12px)",
+        willChange: "transform, clip-path, opacity, filter",
+      });
 
-        if (p < 0.35) {
-          const t = p / 0.35;
-          rotX = gsap.utils.interpolate(initRotX, 0, t);
-          rotY = gsap.utils.interpolate(initRotY, 0, t);
-          rotZ = gsap.utils.interpolate(initRotZ, 0, t);
-          sc   = gsap.utils.interpolate(0.82, 1, t);
-          op   = gsap.utils.interpolate(0, 1, t * 2);
-        } else if (p < 0.65) {
-          rotX = 0; rotY = 0; rotZ = 0; sc = 1; op = 1;
-        } else {
-          const t = (p - 0.65) / 0.35;
-          rotX = rotateDirection === "up" || rotateDirection === "barrel" ? gsap.utils.interpolate(0, -30, t) : 0;
-          rotY = rotateDirection === "left" ? gsap.utils.interpolate(0, 30, t)
-            : rotateDirection === "right" ? gsap.utils.interpolate(0, -30, t)
-            : rotateDirection === "barrel" ? gsap.utils.interpolate(0, 35, t) : 0;
-          rotZ = rotateDirection === "barrel" ? gsap.utils.interpolate(0, 15, t) : 0;
-          sc   = gsap.utils.interpolate(1, 0.85, t);
-          op   = gsap.utils.interpolate(1, 0, t);
-        }
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: outer,
+          start: "top 92%",
+          end: "bottom 8%",
+          scrub: 1.2,
+        },
+      });
 
-        gsap.set(inner, { rotateX: rotX, rotateY: rotY, rotateZ: rotZ, scale: sc, opacity: op });
-      },
-    });
+      tl.to(inner, {
+        clipPath: "inset(0% 0% 0% 0% rounded 0px)",
+        x: 0,
+        y: 0,
+        scale: 1,
+        opacity: 1,
+        filter: "blur(0px)",
+        duration: 0.4,
+        ease: "power2.out",
+      })
+      .to(inner, {
+        duration: 0.2, // Center panel hold duration
+      })
+      .to(inner, {
+        clipPath: cfg.exitClip,
+        x: cfg.exitX,
+        y: cfg.exitY,
+        scale: cfg.initScale,
+        opacity: 0,
+        filter: "blur(12px)",
+        duration: 0.4,
+        ease: "power2.in",
+      });
+    }, outerRef);
 
-    return () => {
-      ScrollTrigger.getAll()
-        .filter(t => t.trigger === outer)
-        .forEach(t => t.kill());
-    };
+    return () => ctx.revert();
   }, [rotateDirection]);
 
   return (
-    <div ref={outerRef} className={className} style={{ perspective: "1000px" }}>
+    <div ref={outerRef} className={className}>
       <div ref={innerRef}>{children}</div>
     </div>
   );
@@ -96,19 +130,24 @@ function TiltCard({ children, className = "" }: { children: React.ReactNode; cla
     const r = el.getBoundingClientRect();
     const nx = ((e.clientX - r.left) / r.width  - 0.5) * 2;
     const ny = ((e.clientY - r.top)  / r.height - 0.5) * 2;
+    
     gsap.to(el, {
       rotateX: -ny * 12,
       rotateY:  nx * 12,
       transformStyle: "preserve-3d",
       duration: 0.3,
       ease: "power2.out",
+      overwrite: "auto",
     });
   };
 
   const handleMouseLeave = () => {
     gsap.to(ref.current, {
-      rotateX: 0, rotateY: 0,
-      duration: 0.5, ease: "elastic.out(1, 0.6)",
+      rotateX: 0, 
+      rotateY: 0,
+      duration: 0.65, 
+      ease: "elastic.out(1, 0.6)",
+      overwrite: "auto",
     });
   };
 
@@ -266,8 +305,12 @@ export const EcosystemSection: React.FC = () => {
           clipPath: "inset(0% 100% 0% 0%)",
           opacity: 0,
           duration: 0.9,
-          ease: "expo.out",
-          scrollTrigger: { trigger: hero, start: "top 75%", toggleActions: "play none none reverse" },
+          ease: "power3.out",
+          scrollTrigger: { 
+            trigger: hero, 
+            start: "top 75%", 
+            toggleActions: "play none none reverse" 
+          },
         });
       }
 
@@ -275,11 +318,19 @@ export const EcosystemSection: React.FC = () => {
       if (headlineRef.current) revealWords(headlineRef.current, hero, { duration: 0.8 });
       if (sublineRef.current)  revealWords(sublineRef.current,  hero, { duration: 0.8, delay: 0.15 });
 
-      // Description fade-in from right
+      // Description fade-in
       if (descRef.current) {
         gsap.from(descRef.current, {
-          x: 60, opacity: 0, duration: 0.9, ease: "expo.out",
-          scrollTrigger: { trigger: hero, start: "top 72%", toggleActions: "play none none reverse" },
+          x: 40, 
+          opacity: 0, 
+          filter: "blur(6px)",
+          duration: 0.95, 
+          ease: "power3.out",
+          scrollTrigger: { 
+            trigger: hero, 
+            start: "top 72%", 
+            toggleActions: "play none none reverse" 
+          },
         });
       }
 
@@ -385,12 +436,16 @@ function HoldingBrandSection({ coreValues }: { coreValues: { num: string; title:
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      if (titleRef.current) revealWords(titleRef.current, sectionRef.current!);
-      if (lineRef.current)  drawLine(lineRef.current, sectionRef.current!);
+      const parent = sectionRef.current;
+      if (!parent) return;
+
+      if (titleRef.current) revealWords(titleRef.current, parent);
+      if (lineRef.current)  drawLine(lineRef.current, parent);
       if (valuesRef.current) {
         scaleBurst(valuesRef.current.children, valuesRef.current, { delay: 0.2 });
       }
-    });
+    }, sectionRef);
+    
     return () => ctx.revert();
   }, []);
 
@@ -435,8 +490,11 @@ function DeepDiveSection() {
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      if (h3Ref.current) revealWords(h3Ref.current, ref.current!);
-    });
+      const parent = ref.current;
+      if (!parent) return;
+      if (h3Ref.current) revealWords(h3Ref.current, parent);
+    }, ref);
+    
     return () => ctx.revert();
   }, []);
 
@@ -464,9 +522,12 @@ function ValuesSummarySection() {
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      if (h3Ref.current) revealWords(h3Ref.current, ref.current!);
+      const parent = ref.current;
+      if (!parent) return;
+      if (h3Ref.current) revealWords(h3Ref.current, parent);
       if (gridRef.current) scaleBurst(gridRef.current.children, gridRef.current);
-    });
+    }, ref);
+    
     return () => ctx.revert();
   }, []);
 
